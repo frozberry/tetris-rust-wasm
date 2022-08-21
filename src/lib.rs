@@ -90,16 +90,11 @@ impl Engine {
 
         self.falling_tetrimino.y += 1;
 
-        if self.check_collision() {
+        if self.check_bottom_row() || self.check_collision() {
             self.falling_tetrimino.y -= 1;
             self.board[self.falling_tetrimino.y][self.falling_tetrimino.x] = true;
-            self.falling_tetrimino.y = 10;
+            self.falling_tetrimino.y = 15;
             return;
-        }
-
-        if self.check_bottom_row() {
-            self.board[self.falling_tetrimino.y][self.falling_tetrimino.x] = true;
-            self.falling_tetrimino.y = 2;
         }
 
         self.board[self.falling_tetrimino.y][self.falling_tetrimino.x] = true;
@@ -109,7 +104,7 @@ impl Engine {
     }
 
     fn check_bottom_row(&self) -> bool {
-        self.falling_tetrimino.y == HEIGHT as usize - 1
+        self.falling_tetrimino.y > HEIGHT - 1
     }
 
     fn check_collision(&self) -> bool {
