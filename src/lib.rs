@@ -1,8 +1,11 @@
 mod utils;
 
 use input::Input;
+use tetrimino::Tetrimino;
 use vec2::Vec2;
 use wasm_bindgen::prelude::*;
+
+use crate::tetrimino::Shape;
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
@@ -11,15 +14,16 @@ use wasm_bindgen::prelude::*;
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
 mod input;
+mod tetrimino;
 mod vec2;
 
-const WIDTH: usize = 3;
+const WIDTH: usize = 4;
 const HEIGHT: usize = 20;
 
 #[wasm_bindgen]
 pub struct Engine {
     board: [[bool; WIDTH]; HEIGHT],
-    falling_tetrimino: Option<Vec2>,
+    falling_tetrimino: Option<Tetrimino>,
     paused: bool,
     frames: u32,
 }
@@ -27,7 +31,7 @@ pub struct Engine {
 #[wasm_bindgen]
 impl Engine {
     pub fn new() -> Engine {
-        let t = Vec2::new(0, 3);
+        let t = Tetrimino::new(Shape::Q, 1, 3);
         let board = [[false; WIDTH]; HEIGHT];
 
         Engine {
@@ -52,9 +56,9 @@ impl Engine {
 
     pub fn left(&mut self) {
         if self.falling_tetrimino.is_some() {
-            if self.falling_tetrimino.unwrap().x > 0 {
+            if self.falling_tetrimino.as_ref().unwrap().pos.x > 0 {
                 self.clear_current_square();
-                self.falling_tetrimino.as_mut().unwrap().x -= 1;
+                self.falling_tetrimino.as_mut().unwrap().pos.x -= 1;
                 self.set_current_square();
             }
         }
@@ -63,8 +67,8 @@ impl Engine {
     pub fn right(&mut self) {
         if self.falling_tetrimino.is_some() {
             self.clear_current_square();
-            if self.falling_tetrimino.unwrap().x <= WIDTH - 2 {
-                self.falling_tetrimino.as_mut().unwrap().x += 1;
+            if self.falling_tetrimino.as_ref().unwrap().pos.x <= WIDTH - 2 {
+                self.falling_tetrimino.as_mut().unwrap().pos.x += 1;
             }
             self.set_current_square();
         }
@@ -73,8 +77,8 @@ impl Engine {
     pub fn down(&mut self) {
         if self.falling_tetrimino.is_some() {
             self.clear_current_square();
-            if self.falling_tetrimino.unwrap().y <= HEIGHT - 2 {
-                self.falling_tetrimino.as_mut().unwrap().y += 1;
+            if self.falling_tetrimino.as_ref().unwrap().pos.y <= HEIGHT - 2 {
+                self.falling_tetrimino.as_mut().unwrap().pos.y += 1;
 
                 // Copied collision detecion from tick
                 if self.check_bottom_row() || self.check_collision() {
@@ -87,10 +91,25 @@ impl Engine {
     }
 
     fn clear_current_square(&mut self) {
-        self.board[self.falling_tetrimino.unwrap().y][self.falling_tetrimino.unwrap().x] = false
+        self.falling_tetrimino
+            .as_ref()
+            .unwrap()
+            .get_squares()
+            .iter()
+            .for_each(|square| {
+                self.board[square.y][square.x] = false;
+            });
     }
+
     fn set_current_square(&mut self) {
-        self.board[self.falling_tetrimino.unwrap().y][self.falling_tetrimino.unwrap().x] = true
+        self.falling_tetrimino
+            .as_ref()
+            .unwrap()
+            .get_squares()
+            .iter()
+            .for_each(|square| {
+                self.board[square.y][square.x] = true;
+            });
     }
 
     pub fn toggle_pause(&mut self) -> bool {
@@ -99,7 +118,7 @@ impl Engine {
     }
 
     pub fn reset(&mut self) {
-        let t = Vec2::new(2, 3);
+        let t = Tetrimino::new(Shape::Q, 1, 3);
         let board = [[false; WIDTH]; HEIGHT];
         self.falling_tetrimino = Some(t);
         self.board = board;
@@ -113,19 +132,29 @@ impl Engine {
         if self.frames % 40 == 0 {
             if self.falling_tetrimino.is_some() {
                 // If there is an falling_tetrimino, update its position
-                self.board[self.falling_tetrimino.unwrap().y][self.falling_tetrimino.unwrap().x] =
-                    false;
-                self.falling_tetrimino.as_mut().unwrap().y += 1;
+                self.falling_tetrimino
+                    .as_ref()
+                    .unwrap()
+                    .get_squares()
+                    .iter()
+                    .for_each(|square| {
+                        self.board[square.y][square.x] = false;
+                    });
+
+                self.falling_tetrimino.as_mut().unwrap().pos.y += 1;
 
                 if !self.check_collision() {
-                    self.board[self.falling_tetrimino.unwrap().y]
-                        [self.falling_tetrimino.unwrap().x] = true;
+                    self.falling_tetrimino
+                        .as_ref()
+                        .unwrap()
+                        .get_squares()
+                        .iter()
+                        .for_each(|square| {
+                            self.board[square.y][square.x] = true;
+                        });
                 } else {
                     self.resolve_collision()
                 }
-            } else {
-                // If falling_tetrimino is None, spawn a new one
-                self.falling_tetrimino = Some(Vec2::new(0, 10));
             }
         }
 
@@ -137,18 +166,37 @@ impl Engine {
     }
 
     fn check_bottom_row(&self) -> bool {
-        self.falling_tetrimino.unwrap().y > HEIGHT - 1
+        self.falling_tetrimino
+            .as_ref()
+            .unwrap()
+            .get_squares()
+            .iter()
+            .any(|square| square.y > HEIGHT - 1)
     }
 
     fn check_tetrimino_collision(&self) -> bool {
-        self.board[self.falling_tetrimino.unwrap().y][self.falling_tetrimino.unwrap().x]
+        self.falling_tetrimino
+            .as_ref()
+            .unwrap()
+            .get_squares()
+            .iter()
+            .any(|square| self.board[square.y][square.x])
     }
 
     fn resolve_collision(&mut self) {
-        self.falling_tetrimino.as_mut().unwrap().y -= 1;
-        self.board[self.falling_tetrimino.unwrap().y][self.falling_tetrimino.unwrap().x] = true;
-        self.falling_tetrimino = None;
+        self.falling_tetrimino.as_mut().unwrap().pos.y -= 1;
+        self.falling_tetrimino
+            .as_ref()
+            .unwrap()
+            .get_squares()
+            .iter()
+            .for_each(|square| {
+                self.board[square.y][square.x] = true;
+            });
+
         self.clear_full_rows();
+        let t = Tetrimino::new(Shape::Q, 1, 3);
+        self.falling_tetrimino = Some(t);
     }
 
     fn clear_full_rows(&mut self) {
