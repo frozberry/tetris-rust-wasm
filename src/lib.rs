@@ -13,7 +13,7 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 mod input;
 mod vec2;
 
-const WIDTH: usize = 2;
+const WIDTH: usize = 3;
 const HEIGHT: usize = 20;
 
 #[wasm_bindgen]
@@ -52,16 +52,20 @@ impl Engine {
 
     pub fn left(&mut self) {
         if self.falling_tetrimino.is_some() {
-            self.clear_current_square();
-            self.falling_tetrimino.as_mut().unwrap().x -= 1;
-            self.set_current_square();
+            if self.falling_tetrimino.unwrap().x > 0 {
+                self.clear_current_square();
+                self.falling_tetrimino.as_mut().unwrap().x -= 1;
+                self.set_current_square();
+            }
         }
     }
 
     pub fn right(&mut self) {
         if self.falling_tetrimino.is_some() {
             self.clear_current_square();
-            self.falling_tetrimino.as_mut().unwrap().x += 1;
+            if self.falling_tetrimino.unwrap().x <= WIDTH - 2 {
+                self.falling_tetrimino.as_mut().unwrap().x += 1;
+            }
             self.set_current_square();
         }
     }
@@ -69,7 +73,15 @@ impl Engine {
     pub fn down(&mut self) {
         if self.falling_tetrimino.is_some() {
             self.clear_current_square();
-            self.falling_tetrimino.as_mut().unwrap().y += 1;
+            if self.falling_tetrimino.unwrap().y <= HEIGHT - 2 {
+                self.falling_tetrimino.as_mut().unwrap().y += 1;
+
+                // Copied collision detecion from tick
+                if self.check_bottom_row() || self.check_collision() {
+                    self.resolve_collision();
+                    return;
+                }
+            }
             self.set_current_square();
         }
     }
@@ -100,26 +112,19 @@ impl Engine {
 
         if self.frames % 40 == 0 {
             if self.falling_tetrimino.is_some() {
+                // If there is an falling_tetrimino, update its position
                 self.board[self.falling_tetrimino.unwrap().y][self.falling_tetrimino.unwrap().x] =
                     false;
-
                 self.falling_tetrimino.as_mut().unwrap().y += 1;
 
-                if self.check_bottom_row() || self.check_collision() {
-                    self.falling_tetrimino.as_mut().unwrap().y -= 1;
-
+                if !self.check_collision() {
                     self.board[self.falling_tetrimino.unwrap().y]
                         [self.falling_tetrimino.unwrap().x] = true;
-
-                    self.falling_tetrimino = None;
-                    return;
+                } else {
+                    self.resolve_collision()
                 }
-
-                self.board[self.falling_tetrimino.unwrap().y][self.falling_tetrimino.unwrap().x] =
-                    true;
-
-                self.clear_full_rows();
             } else {
+                // If falling_tetrimino is None, spawn a new one
                 self.falling_tetrimino = Some(Vec2::new(0, 10));
             }
         }
@@ -127,12 +132,23 @@ impl Engine {
         self.frames += 1;
     }
 
+    fn check_collision(&self) -> bool {
+        self.check_bottom_row() || self.check_tetrimino_collision()
+    }
+
     fn check_bottom_row(&self) -> bool {
         self.falling_tetrimino.unwrap().y > HEIGHT - 1
     }
 
-    fn check_collision(&self) -> bool {
+    fn check_tetrimino_collision(&self) -> bool {
         self.board[self.falling_tetrimino.unwrap().y][self.falling_tetrimino.unwrap().x]
+    }
+
+    fn resolve_collision(&mut self) {
+        self.falling_tetrimino.as_mut().unwrap().y -= 1;
+        self.board[self.falling_tetrimino.unwrap().y][self.falling_tetrimino.unwrap().x] = true;
+        self.falling_tetrimino = None;
+        self.clear_full_rows();
     }
 
     fn clear_full_rows(&mut self) {
@@ -142,6 +158,7 @@ impl Engine {
             .enumerate()
             .for_each(|(index, row)| {
                 if row.iter().all(|square| *square) {
+                    self.falling_tetrimino = None;
                     let board_copy = self.board;
 
                     for i in (1..=index).rev() {
