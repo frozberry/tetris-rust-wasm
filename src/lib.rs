@@ -21,7 +21,7 @@ const HEIGHT: usize = 20;
 // }
 
 #[wasm_bindgen]
-pub struct Universe {
+pub struct Engine {
     // width: u32,
     // height: u32,
     board: [[bool; WIDTH]; HEIGHT],
@@ -31,12 +31,12 @@ pub struct Universe {
 }
 
 #[wasm_bindgen]
-impl Universe {
-    pub fn new() -> Universe {
+impl Engine {
+    pub fn new() -> Engine {
         let t = Vec2::new(2, 3);
         let board = [[false; WIDTH]; HEIGHT];
 
-        Universe {
+        Engine {
             board,
             falling_tetrimino: t,
             paused: false,
