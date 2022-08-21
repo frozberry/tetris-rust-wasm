@@ -13,8 +13,8 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 mod input;
 mod vec2;
 
-const WIDTH: u32 = 10;
-const HEIGHT: u32 = 20;
+const WIDTH: usize = 10;
+const HEIGHT: usize = 20;
 
 fn i(pos: Vec2) -> usize {
     (pos.y * WIDTH as usize + pos.x) as usize
@@ -44,11 +44,11 @@ impl Universe {
         }
     }
 
-    pub fn width(&self) -> u32 {
+    pub fn width(&self) -> usize {
         WIDTH
     }
 
-    pub fn height(&self) -> u32 {
+    pub fn height(&self) -> usize {
         HEIGHT
     }
 
