@@ -195,7 +195,7 @@ impl Engine {
             });
 
         self.clear_full_rows();
-        let t = Tetrimino::new(Shape::Q, 1, 3);
+        let t = Tetrimino::spawn();
         self.falling_tetrimino = Some(t);
     }
 
