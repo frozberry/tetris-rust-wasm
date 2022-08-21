@@ -16,14 +16,8 @@ mod vec2;
 const WIDTH: usize = 10;
 const HEIGHT: usize = 20;
 
-// fn i(pos: Vec2) -> usize {
-//     (pos.y * WIDTH as usize + pos.x) as usize
-// }
-
 #[wasm_bindgen]
 pub struct Engine {
-    // width: u32,
-    // height: u32,
     board: [[bool; WIDTH]; HEIGHT],
     falling_tetrimino: Vec2,
     paused: bool,
@@ -105,11 +99,12 @@ impl Engine {
 
         if self.check_bottom_row() {
             self.board[self.falling_tetrimino.y][self.falling_tetrimino.x] = true;
-            self.falling_tetrimino.y = 10;
+            self.falling_tetrimino.y = 2;
         }
 
         self.board[self.falling_tetrimino.y][self.falling_tetrimino.x] = true;
 
+        self.clear_full_rows();
         self.input = None;
     }
 
@@ -119,5 +114,21 @@ impl Engine {
 
     fn check_collision(&self) -> bool {
         self.board[self.falling_tetrimino.y][self.falling_tetrimino.x]
+    }
+
+    fn clear_full_rows(&mut self) {
+        self.board
+            .clone()
+            .iter()
+            .enumerate()
+            .for_each(|(index, row)| {
+                if row.iter().all(|square| *square) {
+                    let board_copy = self.board;
+
+                    for i in (1..=index).rev() {
+                        self.board[i] = board_copy[i - 1]
+                    }
+                }
+            })
     }
 }
