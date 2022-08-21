@@ -16,15 +16,15 @@ mod vec2;
 const WIDTH: usize = 10;
 const HEIGHT: usize = 20;
 
-fn i(pos: Vec2) -> usize {
-    (pos.y * WIDTH as usize + pos.x) as usize
-}
+// fn i(pos: Vec2) -> usize {
+//     (pos.y * WIDTH as usize + pos.x) as usize
+// }
 
 #[wasm_bindgen]
 pub struct Universe {
     // width: u32,
     // height: u32,
-    board: [bool; (WIDTH * HEIGHT) as usize],
+    board: [[bool; WIDTH]; HEIGHT],
     falling_tetrimino: Vec2,
     paused: bool,
     input: Option<Input>,
@@ -34,7 +34,7 @@ pub struct Universe {
 impl Universe {
     pub fn new() -> Universe {
         let t = Vec2::new(2, 3);
-        let board = [false; WIDTH * HEIGHT];
+        let board = [[false; WIDTH]; HEIGHT];
 
         Universe {
             board,
@@ -52,7 +52,7 @@ impl Universe {
         HEIGHT
     }
 
-    pub fn board(&self) -> *const bool {
+    pub fn board(&self) -> *const [bool; WIDTH] {
         self.board.as_ptr()
     }
 
@@ -75,7 +75,7 @@ impl Universe {
 
     pub fn reset(&mut self) {
         let t = Vec2::new(2, 3);
-        let board = [false; WIDTH * HEIGHT];
+        let board = [[false; WIDTH]; HEIGHT];
         self.falling_tetrimino = t;
         self.board = board;
     }
@@ -84,7 +84,7 @@ impl Universe {
         if self.paused {
             return;
         }
-        self.board[i(self.falling_tetrimino)] = false;
+        self.board[self.falling_tetrimino.y][self.falling_tetrimino.x] = false;
 
         if let Some(input) = &self.input {
             match input {
@@ -98,17 +98,17 @@ impl Universe {
 
         if self.check_collision() {
             self.falling_tetrimino.y -= 1;
-            self.board[i(self.falling_tetrimino)] = true;
+            self.board[self.falling_tetrimino.y][self.falling_tetrimino.x] = true;
             self.falling_tetrimino.y = 10;
             return;
         }
 
         if self.check_bottom_row() {
-            self.board[i(self.falling_tetrimino)] = true;
+            self.board[self.falling_tetrimino.y][self.falling_tetrimino.x] = true;
             self.falling_tetrimino.y = 10;
         }
 
-        self.board[i(self.falling_tetrimino)] = true;
+        self.board[self.falling_tetrimino.y][self.falling_tetrimino.x] = true;
 
         self.input = None;
     }
@@ -118,7 +118,6 @@ impl Universe {
     }
 
     fn check_collision(&self) -> bool {
-        let square = i(self.falling_tetrimino);
-        self.board[square]
+        self.board[self.falling_tetrimino.y][self.falling_tetrimino.x]
     }
 }
