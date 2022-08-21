@@ -52,18 +52,39 @@ impl Universe {
         self.board.as_ptr()
     }
 
+    pub fn toggle_pause(&mut self) -> bool {
+        self.paused = !self.paused;
+        self.paused
+    }
+
     pub fn tick(&mut self) {
         if self.paused {
             return;
         }
 
+        if self.check_bottom_row() {
+            self.board[i(self.falling_tetrimino)] = true;
+            self.falling_tetrimino.y = 2;
+            return;
+        }
+
         self.board[i(self.falling_tetrimino)] = false;
         self.falling_tetrimino.y += 1;
-        self.board[i(self.falling_tetrimino)] = true;
+
+        if self.check_collision() {
+            self.falling_tetrimino.y -= 1;
+            self.board[i(self.falling_tetrimino)] = true;
+        }
+
+        self.falling_tetrimino.y = 2;
     }
 
-    pub fn toggle_pause(&mut self) -> bool {
-        self.paused = !self.paused;
-        self.paused
+    fn check_bottom_row(&self) -> bool {
+        self.falling_tetrimino.y == HEIGHT as usize - 1
+    }
+
+    fn check_collision(&self) -> bool {
+        let square = i(self.falling_tetrimino);
+        self.board[square]
     }
 }
