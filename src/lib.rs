@@ -13,7 +13,7 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 mod input;
 mod vec2;
 
-const WIDTH: usize = 5;
+const WIDTH: usize = 2;
 const HEIGHT: usize = 20;
 
 #[wasm_bindgen]
@@ -27,7 +27,7 @@ pub struct Engine {
 #[wasm_bindgen]
 impl Engine {
     pub fn new() -> Engine {
-        let t = Vec2::new(3, 3);
+        let t = Vec2::new(0, 3);
         let board = [[false; WIDTH]; HEIGHT];
 
         Engine {
@@ -119,6 +119,8 @@ impl Engine {
                     true;
 
                 self.clear_full_rows();
+            } else {
+                self.falling_tetrimino = Some(Vec2::new(0, 10));
             }
         }
 
