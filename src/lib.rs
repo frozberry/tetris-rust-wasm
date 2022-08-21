@@ -57,6 +57,13 @@ impl Universe {
         self.paused
     }
 
+    pub fn reset(&mut self) {
+        let t = Vec2::new(2, 3);
+        let board = [false; (WIDTH * HEIGHT) as usize];
+        self.falling_tetrimino = t;
+        self.board = board;
+    }
+
     pub fn tick(&mut self) {
         if self.paused {
             return;
