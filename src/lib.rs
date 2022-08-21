@@ -56,7 +56,14 @@ impl Engine {
 
     pub fn left(&mut self) {
         if self.falling_tetrimino.is_some() {
-            if self.falling_tetrimino.as_ref().unwrap().pos.x > 0 {
+            if self
+                .falling_tetrimino
+                .as_ref()
+                .unwrap()
+                .get_squares()
+                .iter()
+                .all(|square| square.x > 0)
+            {
                 self.clear_current_square();
                 self.falling_tetrimino.as_mut().unwrap().pos.x -= 1;
                 self.set_current_square();
@@ -66,11 +73,18 @@ impl Engine {
 
     pub fn right(&mut self) {
         if self.falling_tetrimino.is_some() {
-            self.clear_current_square();
-            if self.falling_tetrimino.as_ref().unwrap().pos.x <= WIDTH - 2 {
+            if self
+                .falling_tetrimino
+                .as_ref()
+                .unwrap()
+                .get_squares()
+                .iter()
+                .all(|square| square.x <= WIDTH - 2)
+            {
+                self.clear_current_square();
                 self.falling_tetrimino.as_mut().unwrap().pos.x += 1;
+                self.set_current_square();
             }
-            self.set_current_square();
         }
     }
 
