@@ -22,6 +22,7 @@ pub struct Engine {
     falling_tetrimino: Vec2,
     paused: bool,
     input: Option<Input>,
+    frames: u32,
 }
 
 #[wasm_bindgen]
@@ -35,6 +36,7 @@ impl Engine {
             falling_tetrimino: t,
             paused: false,
             input: None,
+            frames: 0,
         }
     }
 
@@ -51,15 +53,28 @@ impl Engine {
     }
 
     pub fn left(&mut self) {
-        self.input = Some(Input::Left)
+        self.clear_current_square();
+        self.falling_tetrimino.x -= 1;
+        self.set_current_square();
     }
 
     pub fn right(&mut self) {
-        self.input = Some(Input::Right)
+        self.clear_current_square();
+        self.falling_tetrimino.x += 1;
+        self.set_current_square();
     }
 
     pub fn down(&mut self) {
-        self.input = Some(Input::Down)
+        self.clear_current_square();
+        self.falling_tetrimino.y += 1;
+        self.set_current_square();
+    }
+
+    fn clear_current_square(&mut self) {
+        self.board[self.falling_tetrimino.y][self.falling_tetrimino.x] = false
+    }
+    fn set_current_square(&mut self) {
+        self.board[self.falling_tetrimino.y][self.falling_tetrimino.x] = true
     }
 
     pub fn toggle_pause(&mut self) -> bool {
@@ -78,29 +93,25 @@ impl Engine {
         if self.paused {
             return;
         }
-        self.board[self.falling_tetrimino.y][self.falling_tetrimino.x] = false;
 
-        if let Some(input) = &self.input {
-            match input {
-                Input::Down => self.falling_tetrimino.y += 1,
-                Input::Left => self.falling_tetrimino.x -= 1,
-                Input::Right => self.falling_tetrimino.x += 1,
+        if self.frames % 40 == 0 {
+            self.board[self.falling_tetrimino.y][self.falling_tetrimino.x] = false;
+            self.falling_tetrimino.y += 1;
+
+            if self.check_bottom_row() || self.check_collision() {
+                self.falling_tetrimino.y -= 1;
+                self.board[self.falling_tetrimino.y][self.falling_tetrimino.x] = true;
+                self.falling_tetrimino.y = 15;
+                return;
             }
-        }
 
-        self.falling_tetrimino.y += 1;
-
-        if self.check_bottom_row() || self.check_collision() {
-            self.falling_tetrimino.y -= 1;
             self.board[self.falling_tetrimino.y][self.falling_tetrimino.x] = true;
-            self.falling_tetrimino.y = 15;
-            return;
+
+            self.clear_full_rows();
         }
 
-        self.board[self.falling_tetrimino.y][self.falling_tetrimino.x] = true;
-
-        self.clear_full_rows();
-        self.input = None;
+        self.frames += 1;
+        // self.input = None;
     }
 
     fn check_bottom_row(&self) -> bool {
