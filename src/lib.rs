@@ -30,7 +30,7 @@ fn i(pos: Vec2) -> usize {
 #[wasm_bindgen]
 impl Universe {
     pub fn new() -> Universe {
-        let t = Vec2::new(2, 6);
+        let t = Vec2::new(2, 3);
         let board = [false; (WIDTH * HEIGHT) as usize];
 
         Universe {
@@ -62,21 +62,22 @@ impl Universe {
             return;
         }
 
-        if self.check_bottom_row() {
-            self.board[i(self.falling_tetrimino)] = true;
-            self.falling_tetrimino.y = 2;
-            return;
-        }
-
         self.board[i(self.falling_tetrimino)] = false;
         self.falling_tetrimino.y += 1;
 
         if self.check_collision() {
             self.falling_tetrimino.y -= 1;
             self.board[i(self.falling_tetrimino)] = true;
+            self.falling_tetrimino.y = 10;
+            return;
         }
 
-        self.falling_tetrimino.y = 2;
+        if self.check_bottom_row() {
+            self.board[i(self.falling_tetrimino)] = true;
+            self.falling_tetrimino.y = 10;
+        }
+
+        self.board[i(self.falling_tetrimino)] = true;
     }
 
     fn check_bottom_row(&self) -> bool {
