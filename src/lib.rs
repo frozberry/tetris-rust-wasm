@@ -1,5 +1,6 @@
 mod utils;
 
+use input::Input;
 use vec2::Vec2;
 use wasm_bindgen::prelude::*;
 
@@ -9,10 +10,15 @@ use wasm_bindgen::prelude::*;
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
+mod input;
 mod vec2;
 
 const WIDTH: u32 = 10;
 const HEIGHT: u32 = 20;
+
+fn i(pos: Vec2) -> usize {
+    (pos.y * WIDTH as usize + pos.x) as usize
+}
 
 #[wasm_bindgen]
 pub struct Universe {
@@ -21,10 +27,7 @@ pub struct Universe {
     board: [bool; (WIDTH * HEIGHT) as usize],
     falling_tetrimino: Vec2,
     paused: bool,
-}
-
-fn i(pos: Vec2) -> usize {
-    (pos.y * WIDTH as usize + pos.x) as usize
+    input: Option<Input>,
 }
 
 #[wasm_bindgen]
@@ -37,6 +40,7 @@ impl Universe {
             board,
             falling_tetrimino: t,
             paused: false,
+            input: None,
         }
     }
 
@@ -50,6 +54,18 @@ impl Universe {
 
     pub fn board(&self) -> *const bool {
         self.board.as_ptr()
+    }
+
+    pub fn left(&mut self) {
+        self.input = Some(Input::Left)
+    }
+
+    pub fn right(&mut self) {
+        self.input = Some(Input::Right)
+    }
+
+    pub fn down(&mut self) {
+        self.input = Some(Input::Down)
     }
 
     pub fn toggle_pause(&mut self) -> bool {
@@ -68,8 +84,16 @@ impl Universe {
         if self.paused {
             return;
         }
-
         self.board[i(self.falling_tetrimino)] = false;
+
+        if let Some(input) = &self.input {
+            match input {
+                Input::Down => self.falling_tetrimino.y += 1,
+                Input::Left => self.falling_tetrimino.x -= 1,
+                Input::Right => self.falling_tetrimino.x += 1,
+            }
+        }
+
         self.falling_tetrimino.y += 1;
 
         if self.check_collision() {
@@ -85,6 +109,8 @@ impl Universe {
         }
 
         self.board[i(self.falling_tetrimino)] = true;
+
+        self.input = None;
     }
 
     fn check_bottom_row(&self) -> bool {
