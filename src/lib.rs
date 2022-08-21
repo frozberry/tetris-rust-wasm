@@ -34,7 +34,7 @@ pub struct Universe {
 impl Universe {
     pub fn new() -> Universe {
         let t = Vec2::new(2, 3);
-        let board = [false; (WIDTH * HEIGHT) as usize];
+        let board = [false; WIDTH * HEIGHT];
 
         Universe {
             board,
@@ -75,7 +75,7 @@ impl Universe {
 
     pub fn reset(&mut self) {
         let t = Vec2::new(2, 3);
-        let board = [false; (WIDTH * HEIGHT) as usize];
+        let board = [false; WIDTH * HEIGHT];
         self.falling_tetrimino = t;
         self.board = board;
     }
