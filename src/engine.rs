@@ -10,6 +10,7 @@ pub struct Engine {
     board: [[Color; WIDTH]; HEIGHT],
     falling_tetrimino: Tetrimino,
     paused: bool,
+    debug: bool,
     frames: u32,
     ghost_squares: [Vec2; 4],
 }
@@ -29,6 +30,7 @@ impl Engine {
             board,
             falling_tetrimino,
             paused: false,
+            debug: false,
             frames: 0,
             ghost_squares,
         };
@@ -38,7 +40,7 @@ impl Engine {
     }
 
     pub fn tick(&mut self) {
-        if self.paused {
+        if self.paused || self.debug {
             return;
         }
 
@@ -50,6 +52,9 @@ impl Engine {
     }
 
     pub fn left(&mut self) {
+        if self.paused {
+            return;
+        }
         self.clear_current_tetrimino_pos();
 
         self.falling_tetrimino.pos.x -= 1;
@@ -63,6 +68,9 @@ impl Engine {
     }
 
     pub fn right(&mut self) {
+        if self.paused {
+            return;
+        }
         self.clear_current_tetrimino_pos();
 
         self.falling_tetrimino.pos.x += 1;
@@ -76,6 +84,9 @@ impl Engine {
     }
 
     pub fn down(&mut self) {
+        if self.paused {
+            return;
+        }
         // If there is an falling_tetrimino, update its position
         // Clear the board at the tetriminos current position
         self.clear_current_tetrimino_pos();
@@ -91,6 +102,9 @@ impl Engine {
     }
 
     pub fn hard_down(&mut self) {
+        if self.paused {
+            return;
+        }
         loop {
             self.clear_current_tetrimino_pos();
             self.falling_tetrimino.pos.y += 1;
@@ -103,6 +117,9 @@ impl Engine {
     }
 
     pub fn rotate_clockwise(&mut self) {
+        if self.paused {
+            return;
+        }
         self.clear_current_tetrimino_pos();
         self.falling_tetrimino.rotation += 1;
 
@@ -115,6 +132,9 @@ impl Engine {
     }
 
     pub fn rotate_counter_clockwise(&mut self) {
+        if self.paused {
+            return;
+        }
         self.clear_current_tetrimino_pos();
         self.falling_tetrimino.rotation -= 1;
 
@@ -248,5 +268,10 @@ impl Engine {
         self.falling_tetrimino = tetrimino;
         self.board = board;
         self.set_current_tetrimino_pos();
+    }
+
+    pub fn toggle_debug(&mut self) -> bool {
+        self.debug = !self.debug;
+        self.debug
     }
 }
