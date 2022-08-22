@@ -1,3 +1,4 @@
+mod collision;
 mod engine;
 mod input;
 mod shape;

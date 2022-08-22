@@ -1,6 +1,7 @@
 use wasm_bindgen::prelude::*;
 
 use crate::{
+    collision::{self, check_down_collision},
     shape::{Color, Shape},
     tetrimino::Tetrimino,
 };
@@ -28,6 +29,20 @@ impl Engine {
             paused: false,
             frames: 0,
         }
+    }
+
+    pub fn tick(&mut self) {
+        if self.paused {
+            return;
+        }
+
+        if self.frames % 40 == 0 {
+            if self.falling_tetrimino.is_some() {
+                self.down()
+            }
+        }
+
+        self.frames += 1;
     }
 
     pub fn left(&mut self) {
@@ -65,36 +80,20 @@ impl Engine {
     }
 
     pub fn down(&mut self) {
+        // If there is an falling_tetrimino, update its position
         if self.falling_tetrimino.is_some() {
-            // If there is an falling_tetrimino, update its position
-            if self.falling_tetrimino.is_some() {
-                // Clear the board at the tetriminos current position
-                self.clear_current_tetrimino_pos();
+            // Clear the board at the tetriminos current position
+            self.clear_current_tetrimino_pos();
 
-                // Drop tetrimino position
-                self.falling_tetrimino.as_mut().unwrap().pos.y += 1;
+            // Drop tetrimino position
+            self.falling_tetrimino.as_mut().unwrap().pos.y += 1;
 
-                if !self.check_collision() {
-                    self.set_current_tetrimino_pos()
-                } else {
-                    self.resolve_collision()
-                }
+            if !check_down_collision(self.falling_tetrimino.unwrap(), self.board) {
+                self.set_current_tetrimino_pos()
+            } else {
+                self.resolve_collision()
             }
         }
-    }
-
-    pub fn tick(&mut self) {
-        if self.paused {
-            return;
-        }
-
-        if self.frames % 40 == 0 {
-            if self.falling_tetrimino.is_some() {
-                self.down()
-            }
-        }
-
-        self.frames += 1;
     }
 
     fn clear_current_tetrimino_pos(&mut self) {
@@ -116,28 +115,6 @@ impl Engine {
             .get_squares()
             .iter()
             .for_each(|square| self.board[square.y][square.x] = color);
-    }
-
-    fn check_bottom_row(&self) -> bool {
-        self.falling_tetrimino
-            .as_ref()
-            .unwrap()
-            .get_squares()
-            .iter()
-            .any(|square| square.y > HEIGHT - 1)
-    }
-
-    fn check_tetrimino_collision(&self) -> bool {
-        self.falling_tetrimino
-            .as_ref()
-            .unwrap()
-            .get_squares()
-            .iter()
-            .any(|square| self.board[square.y][square.x].is_some())
-    }
-
-    fn check_collision(&self) -> bool {
-        self.check_bottom_row() || self.check_tetrimino_collision()
     }
 
     fn resolve_collision(&mut self) {
