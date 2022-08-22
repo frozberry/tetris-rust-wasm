@@ -30,24 +30,6 @@ impl Engine {
         }
     }
 
-    pub fn tetrimino(&self) -> Option<Color> {
-        // Some(self.falling_tetrimino.unwrap().shape.color())
-        // Some(Color::Red)
-        None
-    }
-
-    pub fn width(&self) -> usize {
-        WIDTH
-    }
-
-    pub fn height(&self) -> usize {
-        HEIGHT
-    }
-
-    pub fn board(&self) -> *const [Option<Color>; WIDTH] {
-        self.board.as_ptr()
-    }
-
     pub fn left(&mut self) {
         if self.falling_tetrimino.is_some() {
             if self
@@ -58,9 +40,9 @@ impl Engine {
                 .iter()
                 .all(|square| square.x > 0)
             {
-                self.clear_current_square();
+                self.clear_current_tetrimino_pos();
                 self.falling_tetrimino.as_mut().unwrap().pos.x -= 1;
-                self.set_current_square();
+                self.set_current_tetrimino_pos();
             }
         }
     }
@@ -75,16 +57,16 @@ impl Engine {
                 .iter()
                 .all(|square| square.x <= WIDTH - 2)
             {
-                self.clear_current_square();
+                self.clear_current_tetrimino_pos();
                 self.falling_tetrimino.as_mut().unwrap().pos.x += 1;
-                self.set_current_square();
+                self.set_current_tetrimino_pos();
             }
         }
     }
 
     pub fn down(&mut self) {
         if self.falling_tetrimino.is_some() {
-            self.clear_current_square();
+            self.clear_current_tetrimino_pos();
             if self.falling_tetrimino.as_ref().unwrap().pos.y <= HEIGHT - 2 {
                 self.falling_tetrimino.as_mut().unwrap().pos.y += 1;
 
@@ -94,41 +76,8 @@ impl Engine {
                     return;
                 }
             }
-            self.set_current_square();
+            self.set_current_tetrimino_pos();
         }
-    }
-
-    fn clear_current_square(&mut self) {
-        self.falling_tetrimino
-            .as_ref()
-            .unwrap()
-            .get_squares()
-            .iter()
-            .for_each(|square| {
-                self.board[square.y][square.x] = None;
-            });
-    }
-
-    fn set_current_square(&mut self) {
-        let color = self.get_color();
-        self.falling_tetrimino
-            .as_ref()
-            .unwrap()
-            .get_squares()
-            .iter()
-            .for_each(|square| self.board[square.y][square.x] = color);
-    }
-
-    pub fn toggle_pause(&mut self) -> bool {
-        self.paused = !self.paused;
-        self.paused
-    }
-
-    pub fn reset(&mut self) {
-        let t = Tetrimino::new(Shape::Q, 1, 3);
-        let board = [[None; WIDTH]; HEIGHT];
-        self.falling_tetrimino = Some(t);
-        self.board = board;
     }
 
     pub fn tick(&mut self) {
@@ -140,20 +89,13 @@ impl Engine {
             // If there is an falling_tetrimino, update its position
             if self.falling_tetrimino.is_some() {
                 // Clear the board at the tetriminos current position
-                self.falling_tetrimino
-                    .as_ref()
-                    .unwrap()
-                    .get_squares()
-                    .iter()
-                    .for_each(|square| {
-                        self.board[square.y][square.x] = None;
-                    });
+                self.clear_current_tetrimino_pos();
 
                 // Drop tetrimino position
                 self.falling_tetrimino.as_mut().unwrap().pos.y += 1;
 
                 if !self.check_collision() {
-                    self.update_board();
+                    self.set_current_tetrimino_pos()
                 } else {
                     self.resolve_collision()
                 }
@@ -162,21 +104,25 @@ impl Engine {
 
         self.frames += 1;
     }
-
-    fn update_board(&mut self) {
-        let color = self.get_color();
+    fn clear_current_tetrimino_pos(&mut self) {
         self.falling_tetrimino
             .as_ref()
             .unwrap()
             .get_squares()
             .iter()
             .for_each(|square| {
-                self.board[square.y][square.x] = color;
+                self.board[square.y][square.x] = None;
             });
     }
 
-    fn check_collision(&self) -> bool {
-        self.check_bottom_row() || self.check_tetrimino_collision()
+    fn set_current_tetrimino_pos(&mut self) {
+        let color = self.get_color();
+        self.falling_tetrimino
+            .as_ref()
+            .unwrap()
+            .get_squares()
+            .iter()
+            .for_each(|square| self.board[square.y][square.x] = color);
     }
 
     fn check_bottom_row(&self) -> bool {
@@ -197,10 +143,14 @@ impl Engine {
             .any(|square| self.board[square.y][square.x].is_some())
     }
 
+    fn check_collision(&self) -> bool {
+        self.check_bottom_row() || self.check_tetrimino_collision()
+    }
+
     fn resolve_collision(&mut self) {
         // Move tetrimino back to free space
         self.falling_tetrimino.as_mut().unwrap().pos.y -= 1;
-        self.update_board();
+        self.set_current_tetrimino_pos();
         self.clear_full_rows();
         self.falling_tetrimino = Some(Tetrimino::spawn());
     }
@@ -227,5 +177,35 @@ impl Engine {
             Some(tetrimino) => Some(tetrimino.shape.color()),
             None => None,
         }
+    }
+
+    pub fn tetrimino(&self) -> Option<Color> {
+        // Some(self.falling_tetrimino.unwrap().shape.color())
+        // Some(Color::Red)
+        None
+    }
+
+    pub fn width(&self) -> usize {
+        WIDTH
+    }
+
+    pub fn height(&self) -> usize {
+        HEIGHT
+    }
+
+    pub fn board(&self) -> *const [Option<Color>; WIDTH] {
+        self.board.as_ptr()
+    }
+
+    pub fn toggle_pause(&mut self) -> bool {
+        self.paused = !self.paused;
+        self.paused
+    }
+
+    pub fn reset(&mut self) {
+        let t = Tetrimino::new(Shape::Q, 1, 3);
+        let board = [[None; WIDTH]; HEIGHT];
+        self.falling_tetrimino = Some(t);
+        self.board = board;
     }
 }
