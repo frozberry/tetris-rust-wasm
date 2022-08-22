@@ -157,7 +157,6 @@ window.addEventListener(
 // Loop
 const renderLoop = () => {
   engine.tick()
-  const c = engine.tetrimino()
 
   drawGrid()
   drawCells()

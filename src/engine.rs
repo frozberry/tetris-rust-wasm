@@ -20,13 +20,10 @@ pub struct Engine {
 #[wasm_bindgen]
 impl Engine {
     pub fn new() -> Engine {
-        // let t = Tetrimino::new(Shape::I, 4, 4);
-        let t = Tetrimino::spawn();
         let board = [[None; WIDTH]; HEIGHT];
-
         let mut engine = Engine {
             board,
-            falling_tetrimino: Some(t),
+            falling_tetrimino: None,
             paused: false,
             frames: 0,
         };
@@ -55,7 +52,7 @@ impl Engine {
         // engine.board[13][2] = Some(Color::Yellow);
         // engine.board[13][3] = Some(Color::Yellow);
 
-        engine.set_current_tetrimino_pos();
+        engine.spawn_tetrimino();
         engine
     }
 
@@ -190,7 +187,17 @@ impl Engine {
         self.falling_tetrimino.as_mut().unwrap().pos.y -= 1;
         self.set_current_tetrimino_pos();
         self.clear_full_rows();
-        self.falling_tetrimino = Some(Tetrimino::spawn());
+        self.spawn_tetrimino();
+    }
+
+    fn spawn_tetrimino(&mut self) {
+        let tetrimino = Tetrimino::spawn();
+
+        if check_collision(tetrimino, self.board) {
+            self.reset();
+            return;
+        }
+        self.falling_tetrimino = Some(tetrimino);
 
         self.set_current_tetrimino_pos();
     }
@@ -237,9 +244,9 @@ impl Engine {
     }
 
     pub fn reset(&mut self) {
-        let t = Tetrimino::new(Shape::Q, 1, 3);
+        let tetrimino = Tetrimino::spawn();
         let board = [[None; WIDTH]; HEIGHT];
-        self.falling_tetrimino = Some(t);
+        self.falling_tetrimino = Some(tetrimino);
         self.board = board;
     }
 }
