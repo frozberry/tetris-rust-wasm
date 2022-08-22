@@ -219,12 +219,6 @@ impl Engine {
         }
     }
 
-    pub fn tetrimino(&self) -> Option<Color> {
-        // Some(self.falling_tetrimino.unwrap().shape.color())
-        // Some(Color::Red)
-        None
-    }
-
     pub fn width(&self) -> usize {
         WIDTH
     }
