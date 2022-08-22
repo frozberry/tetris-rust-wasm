@@ -1,15 +1,12 @@
 use wasm_bindgen::prelude::*;
 
 use crate::{
-    collision::{
-        self, check_down_collision, check_left_collision, check_left_wall_collision,
-        check_right_collision,
-    },
+    collision::check_collision,
     shape::{Color, Shape},
     tetrimino::Tetrimino,
 };
 
-pub const WIDTH: usize = 6;
+pub const WIDTH: usize = 8;
 pub const HEIGHT: usize = 20;
 
 #[wasm_bindgen]
@@ -69,7 +66,7 @@ impl Engine {
 
         if self.frames % 40 == 0 {
             if self.falling_tetrimino.is_some() {
-                // self.down()
+                self.down()
             }
         }
 
@@ -78,18 +75,15 @@ impl Engine {
 
     pub fn left(&mut self) {
         if self.falling_tetrimino.is_some() {
-            // Early return to prevent underflowing usize
-            if check_left_wall_collision(self.falling_tetrimino.unwrap()) {
-                return;
-            }
-
             self.clear_current_tetrimino_pos();
+
             self.falling_tetrimino.as_mut().unwrap().pos.x -= 1;
 
-            if !check_left_collision(self.falling_tetrimino.unwrap(), self.board) {
+            if !check_collision(self.falling_tetrimino.unwrap(), self.board) {
                 self.set_current_tetrimino_pos()
             } else {
                 self.falling_tetrimino.as_mut().unwrap().pos.x += 1;
+                self.set_current_tetrimino_pos();
             }
         }
     }
@@ -100,7 +94,7 @@ impl Engine {
 
             self.falling_tetrimino.as_mut().unwrap().pos.x += 1;
 
-            if !check_right_collision(self.falling_tetrimino.unwrap(), self.board) {
+            if !check_collision(self.falling_tetrimino.unwrap(), self.board) {
                 self.set_current_tetrimino_pos()
             } else {
                 self.falling_tetrimino.as_mut().unwrap().pos.x -= 1;
@@ -117,7 +111,7 @@ impl Engine {
 
             self.falling_tetrimino.as_mut().unwrap().pos.y += 1;
 
-            if !check_down_collision(self.falling_tetrimino.unwrap(), self.board) {
+            if !check_collision(self.falling_tetrimino.unwrap(), self.board) {
                 self.set_current_tetrimino_pos()
             } else {
                 self.resolve_collision()
@@ -128,6 +122,7 @@ impl Engine {
         if self.falling_tetrimino.is_some() {
             self.clear_current_tetrimino_pos();
             self.falling_tetrimino.as_mut().unwrap().rotation += 1;
+
             self.set_current_tetrimino_pos()
         }
     }
@@ -139,8 +134,9 @@ impl Engine {
             .get_squares()
             .iter()
             .for_each(|square| {
-                self.board[square.y][square.x] = None;
+                self.board[square.y as usize][square.x as usize] = None;
             });
+        // collision should already have checked coords are valid
     }
 
     fn set_current_tetrimino_pos(&mut self) {
@@ -150,7 +146,8 @@ impl Engine {
             .unwrap()
             .get_squares()
             .iter()
-            .for_each(|square| self.board[square.y][square.x] = color);
+            .for_each(|square| self.board[square.y as usize][square.x as usize] = color);
+        // collision should already have checked usize are valid
     }
 
     fn resolve_collision(&mut self) {

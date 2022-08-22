@@ -15,7 +15,7 @@ pub struct Tetrimino {
 }
 
 impl Tetrimino {
-    pub fn new(shape: Shape, x: usize, y: usize) -> Self {
+    pub fn new(shape: Shape, x: i32, y: i32) -> Self {
         Tetrimino {
             pos: Vec2::new(x, y),
             shape,
@@ -37,7 +37,7 @@ impl Tetrimino {
         for i in 0..4 {
             let x = local[i].x + self.pos.x as i32;
             let y = local[i].y + self.pos.y as i32;
-            world[i] = Vec2::new(x as usize, y as usize);
+            world[i] = Vec2::new(x as i32, y as i32);
         }
         world
     }

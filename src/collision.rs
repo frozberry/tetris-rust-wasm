@@ -4,20 +4,8 @@ use crate::{
     tetrimino::Tetrimino,
 };
 
-pub fn check_down_collision(tetrimino: Tetrimino, board: [[Option<Color>; WIDTH]; HEIGHT]) -> bool {
-    check_floor_collision(tetrimino) || check_tetrimino_collision(tetrimino, board)
-}
-
-pub fn check_left_collision(tetrimino: Tetrimino, board: [[Option<Color>; WIDTH]; HEIGHT]) -> bool {
-    // Checking left wall happens before this is called
-    check_tetrimino_collision(tetrimino, board)
-}
-
-pub fn check_right_collision(
-    tetrimino: Tetrimino,
-    board: [[Option<Color>; WIDTH]; HEIGHT],
-) -> bool {
-    check_right_wall_collision(tetrimino) || check_tetrimino_collision(tetrimino, board)
+pub fn check_collision(tetrimino: Tetrimino, board: [[Option<Color>; WIDTH]; HEIGHT]) -> bool {
+    check_out_of_bounds(tetrimino) || check_tetrimino_collision(tetrimino, board)
 }
 
 fn check_tetrimino_collision(
@@ -27,26 +15,11 @@ fn check_tetrimino_collision(
     tetrimino
         .get_squares()
         .iter()
-        .any(|square| board[square.y][square.x].is_some())
+        .any(|square| board[square.y as usize][square.x as usize].is_some())
 }
 
-fn check_floor_collision(tetrimino: Tetrimino) -> bool {
-    tetrimino
-        .get_squares()
-        .iter()
-        .any(|square| square.y >= HEIGHT)
-}
-
-pub fn check_left_wall_collision(tetrimino: Tetrimino) -> bool {
-    tetrimino
-        .get_squares()
-        .iter()
-        .any(|square| square.x.checked_sub(1).is_none())
-}
-
-fn check_right_wall_collision(tetrimino: Tetrimino) -> bool {
-    tetrimino
-        .get_squares()
-        .iter()
-        .any(|square| square.x >= WIDTH)
+fn check_out_of_bounds(tetrimino: Tetrimino) -> bool {
+    tetrimino.get_squares().iter().any(|square| {
+        square.x < 0 || square.x >= WIDTH as i32 || square.y < 0 || square.y >= HEIGHT as i32
+    })
 }
