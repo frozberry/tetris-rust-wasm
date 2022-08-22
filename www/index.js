@@ -125,6 +125,10 @@ function keys(event) {
       console.log("Down key is pressed.")
       engine.down()
       break
+    case 32:
+      console.log("Space key is pressed.")
+      engine.hard_down()
+      break
     case 90:
       console.log("z key is pressed.")
       engine.rotate_counter_clockwise()

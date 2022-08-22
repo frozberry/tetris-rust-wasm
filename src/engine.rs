@@ -6,7 +6,7 @@ use crate::{
     tetrimino::Tetrimino,
 };
 
-pub const WIDTH: usize = 8;
+pub const WIDTH: usize = 10;
 pub const HEIGHT: usize = 20;
 
 #[wasm_bindgen]
@@ -21,7 +21,7 @@ pub struct Engine {
 impl Engine {
     pub fn new() -> Engine {
         // let t = Tetrimino::new(Shape::I, 4, 4);
-        let t = Tetrimino::new(Shape::Q, 4, 4);
+        let t = Tetrimino::spawn();
         let board = [[None; WIDTH]; HEIGHT];
 
         let mut engine = Engine {
@@ -31,29 +31,29 @@ impl Engine {
             frames: 0,
         };
 
-        engine.board[19][0] = Some(Color::Yellow);
-        engine.board[19][1] = Some(Color::Yellow);
-        engine.board[19][4] = Some(Color::Yellow);
-        engine.board[19][5] = Some(Color::Yellow);
+        // engine.board[19][0] = Some(Color::Yellow);
+        // engine.board[19][1] = Some(Color::Yellow);
+        // engine.board[19][4] = Some(Color::Yellow);
+        // engine.board[19][5] = Some(Color::Yellow);
+        //
+        // engine.board[18][0] = Some(Color::Yellow);
+        // engine.board[18][1] = Some(Color::Yellow);
+        // engine.board[18][4] = Some(Color::Yellow);
+        // engine.board[18][5] = Some(Color::Yellow);
 
-        engine.board[18][0] = Some(Color::Yellow);
-        engine.board[18][1] = Some(Color::Yellow);
-        engine.board[18][4] = Some(Color::Yellow);
-        engine.board[18][5] = Some(Color::Yellow);
+        // engine.board[17][2] = Some(Color::Yellow);
+        // engine.board[17][3] = Some(Color::Yellow);
+        // engine.board[17][4] = Some(Color::Yellow);
+        // engine.board[17][5] = Some(Color::Yellow);
 
-        engine.board[17][2] = Some(Color::Yellow);
-        engine.board[17][3] = Some(Color::Yellow);
-        engine.board[17][4] = Some(Color::Yellow);
-        engine.board[17][5] = Some(Color::Yellow);
-
-        engine.board[16][2] = Some(Color::Yellow);
-        engine.board[16][3] = Some(Color::Yellow);
-        engine.board[15][2] = Some(Color::Yellow);
-        engine.board[15][3] = Some(Color::Yellow);
-        engine.board[14][2] = Some(Color::Yellow);
-        engine.board[14][3] = Some(Color::Yellow);
-        engine.board[13][2] = Some(Color::Yellow);
-        engine.board[13][3] = Some(Color::Yellow);
+        // engine.board[16][2] = Some(Color::Yellow);
+        // engine.board[16][3] = Some(Color::Yellow);
+        // engine.board[15][2] = Some(Color::Yellow);
+        // engine.board[15][3] = Some(Color::Yellow);
+        // engine.board[14][2] = Some(Color::Yellow);
+        // engine.board[14][3] = Some(Color::Yellow);
+        // engine.board[13][2] = Some(Color::Yellow);
+        // engine.board[13][3] = Some(Color::Yellow);
 
         engine.set_current_tetrimino_pos();
         engine
@@ -109,6 +109,7 @@ impl Engine {
             // Clear the board at the tetriminos current position
             self.clear_current_tetrimino_pos();
 
+            // Increment position
             self.falling_tetrimino.as_mut().unwrap().pos.y += 1;
 
             if !check_collision(self.falling_tetrimino.unwrap(), self.board) {
@@ -118,6 +119,21 @@ impl Engine {
             }
         }
     }
+
+    pub fn hard_down(&mut self) {
+        if self.falling_tetrimino.is_some() {
+            loop {
+                self.clear_current_tetrimino_pos();
+                self.falling_tetrimino.as_mut().unwrap().pos.y += 1;
+                if check_collision(self.falling_tetrimino.unwrap(), self.board) {
+                    self.resolve_collision();
+                    return;
+                }
+                self.set_current_tetrimino_pos()
+            }
+        }
+    }
+
     pub fn rotate_clockwise(&mut self) {
         if self.falling_tetrimino.is_some() {
             self.clear_current_tetrimino_pos();

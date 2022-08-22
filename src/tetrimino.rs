@@ -22,11 +22,14 @@ impl Tetrimino {
             rotation: 0,
         }
     }
+
     pub fn spawn() -> Self {
+        let shape = Shape::rand();
+        let pos = shape.get_spawn_pos();
+
         Tetrimino {
-            pos: Vec2::new(4, 4),
-            shape: Shape::rand(),
-            // shape: Shape::I,
+            pos,
+            shape,
             rotation: 0,
         }
     }

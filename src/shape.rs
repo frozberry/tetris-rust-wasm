@@ -56,6 +56,18 @@ impl Shape {
         }
     }
 
+    pub fn get_spawn_pos(&self) -> Vec2 {
+        match self {
+            Shape::I => Vec2::new(4, 0),
+            Shape::Q => Vec2::new(4, 0),
+            Shape::Z => Vec2::new(4, 1),
+            Shape::S => Vec2::new(4, 1),
+            Shape::T => Vec2::new(4, 1),
+            Shape::L => Vec2::new(4, 1),
+            Shape::J => Vec2::new(4, 1),
+        }
+    }
+
     // Rotations from https://tetris.fandom.com/wiki/SRS?file=SRS-pieces.png
     pub fn local(&self, rotation: usize) -> [Vec2; 4] {
         let angle = rotation % 4;
