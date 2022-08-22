@@ -92,14 +92,41 @@ impl Shape {
                 }
                 _ => panic!("Should never happen, angle should always be between 0 and 3"),
             },
-            Shape::S => {
-                let a = Vec2Int::new(0, 0);
-                let b = Vec2Int::new(1, 0);
-                let c = Vec2Int::new(1, 1);
-                let d = Vec2Int::new(2, 1);
+            Shape::S => match angle {
+                0 => {
+                    let a = Vec2Int::new(0, 0);
+                    let b = Vec2Int::new(-1, 0);
+                    let c = Vec2Int::new(0, -1);
+                    let d = Vec2Int::new(1, -1);
 
-                [a, b, c, d]
-            }
+                    [a, b, c, d]
+                }
+                1 => {
+                    let a = Vec2Int::new(0, 0);
+                    let b = Vec2Int::new(0, -1);
+                    let c = Vec2Int::new(1, 0);
+                    let d = Vec2Int::new(1, 1);
+
+                    [a, b, c, d]
+                }
+                2 => {
+                    let a = Vec2Int::new(0, 0);
+                    let b = Vec2Int::new(1, 0);
+                    let c = Vec2Int::new(0, 1);
+                    let d = Vec2Int::new(-1, 1);
+
+                    [a, b, c, d]
+                }
+                3 => {
+                    let a = Vec2Int::new(0, 0);
+                    let b = Vec2Int::new(-1, 0);
+                    let c = Vec2Int::new(0, 1);
+                    let d = Vec2Int::new(-1, -1);
+
+                    [a, b, c, d]
+                }
+                _ => panic!("Should never happen, angle should always be between 0 and 3"),
+            },
             Shape::T => match angle {
                 0 => {
                     let a = Vec2Int::new(0, 0);
