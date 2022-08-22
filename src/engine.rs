@@ -1,6 +1,6 @@
 use wasm_bindgen::prelude::*;
 
-use crate::{collision::check_collision, color::Color, tetrimino::Tetrimino};
+use crate::{collision::check_collision, color::Color, tetrimino::Tetrimino, vec2::Vec2};
 
 pub const WIDTH: usize = 10;
 pub const HEIGHT: usize = 20;
@@ -11,11 +11,18 @@ pub struct Engine {
     falling_tetrimino: Tetrimino,
     paused: bool,
     frames: u32,
+    ghost_squares: [Vec2; 4],
 }
 
 #[wasm_bindgen]
 impl Engine {
     pub fn new() -> Engine {
+        let ghost_squares = [
+            Vec2::new(0, 0),
+            Vec2::new(0, 0),
+            Vec2::new(0, 0),
+            Vec2::new(0, 0),
+        ];
         let board = [[Color::Empty; WIDTH]; HEIGHT];
         let falling_tetrimino = Tetrimino::spawn();
         let mut engine = Engine {
@@ -23,6 +30,7 @@ impl Engine {
             falling_tetrimino,
             paused: false,
             frames: 0,
+            ghost_squares,
         };
 
         // engine.board[19][0] = Some(Color::Yellow);
@@ -182,21 +190,43 @@ impl Engine {
     }
 
     fn set_ghost(&mut self) {
+        // Clear the previous positions ghost
+        self.clear_ghost();
+
         let mut ghost = self.falling_tetrimino.clone();
+
+        // Clear board so ghost doesn't collide with it's own tetrimino
         self.clear_current_tetrimino_pos();
 
         loop {
             ghost.pos.y += 1;
             if check_collision(ghost, self.board) {
                 ghost.pos.y -= 1;
-                ghost.get_squares().iter().for_each(|square| {
+
+                // Save the ghost squares so it can be cleared when the user moves the
+                // tetrimino. This saves having to check every square in the board.
+                for (i, square) in ghost.get_squares().iter().enumerate() {
+                    self.ghost_squares[i] = Vec2::new(square.x, square.y);
+                }
+
+                // Update the board with the ghost squares
+                for square in self.ghost_squares {
                     self.board[square.y as usize][square.x as usize] = Color::Ghost
-                });
+                }
+
                 break;
             }
         }
 
         self.set_current_tetrimino_pos();
+    }
+
+    fn clear_ghost(&mut self) {
+        for square in self.ghost_squares {
+            if !self.board[square.y as usize][square.x as usize].is_solid() {
+                self.board[square.y as usize][square.x as usize] = Color::Empty;
+            }
+        }
     }
 
     fn clear_full_rows(&mut self) {
