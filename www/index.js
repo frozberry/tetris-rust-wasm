@@ -115,7 +115,7 @@ function keys(event) {
       break
     case 38:
       console.log("Up key is pressed.")
-      engine.up()
+      engine.rotate_clockwise()
       break
     case 39:
       console.log("Right key is pressed.")
@@ -124,6 +124,10 @@ function keys(event) {
     case 40:
       console.log("Down key is pressed.")
       engine.down()
+      break
+    case 90:
+      console.log("z key is pressed.")
+      engine.rotate_counter_clockwise()
       break
   }
 }

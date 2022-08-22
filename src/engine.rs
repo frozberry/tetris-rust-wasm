@@ -66,7 +66,7 @@ impl Engine {
 
         if self.frames % 40 == 0 {
             if self.falling_tetrimino.is_some() {
-                self.down()
+                // self.down()
             }
         }
 
@@ -118,12 +118,31 @@ impl Engine {
             }
         }
     }
-    pub fn up(&mut self) {
+    pub fn rotate_clockwise(&mut self) {
         if self.falling_tetrimino.is_some() {
             self.clear_current_tetrimino_pos();
             self.falling_tetrimino.as_mut().unwrap().rotation += 1;
 
-            self.set_current_tetrimino_pos()
+            if !check_collision(self.falling_tetrimino.unwrap(), self.board) {
+                self.set_current_tetrimino_pos()
+            } else {
+                self.falling_tetrimino.as_mut().unwrap().rotation -= 1;
+                self.set_current_tetrimino_pos()
+            }
+        }
+    }
+
+    pub fn rotate_counter_clockwise(&mut self) {
+        if self.falling_tetrimino.is_some() {
+            self.clear_current_tetrimino_pos();
+            self.falling_tetrimino.as_mut().unwrap().rotation -= 1;
+
+            if !check_collision(self.falling_tetrimino.unwrap(), self.board) {
+                self.set_current_tetrimino_pos()
+            } else {
+                self.falling_tetrimino.as_mut().unwrap().rotation += 1;
+                self.set_current_tetrimino_pos()
+            }
         }
     }
 
