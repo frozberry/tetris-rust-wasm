@@ -9,7 +9,7 @@ use crate::{
     tetrimino::Tetrimino,
 };
 
-pub const WIDTH: usize = 8;
+pub const WIDTH: usize = 10;
 pub const HEIGHT: usize = 20;
 
 #[wasm_bindgen]
@@ -23,7 +23,7 @@ pub struct Engine {
 #[wasm_bindgen]
 impl Engine {
     pub fn new() -> Engine {
-        let t = Tetrimino::new(Shape::I, 0, 3);
+        let t = Tetrimino::new(Shape::T, 4, 4);
         let board = [[None; WIDTH]; HEIGHT];
 
         let mut engine = Engine {
