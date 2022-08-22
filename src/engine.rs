@@ -1,7 +1,7 @@
 use wasm_bindgen::prelude::*;
 
 use crate::{
-    collision::{self, check_down_collision},
+    collision::{self, check_down_collision, check_left_collision, check_right_collision},
     shape::{Color, Shape},
     tetrimino::Tetrimino,
 };
@@ -47,16 +47,29 @@ impl Engine {
 
     pub fn left(&mut self) {
         if self.falling_tetrimino.is_some() {
-            if self
+            self.clear_current_tetrimino_pos();
+
+            // Left needs different logic since usize can't underflow
+            let new_x = self
                 .falling_tetrimino
                 .as_ref()
                 .unwrap()
-                .get_squares()
-                .iter()
-                .all(|square| square.x > 0)
-            {
-                self.clear_current_tetrimino_pos();
-                self.falling_tetrimino.as_mut().unwrap().pos.x -= 1;
+                .pos
+                .x
+                .checked_sub(1);
+
+            // If current x pos is 0
+            if new_x.is_none() {
+                self.set_current_tetrimino_pos();
+                return;
+            }
+
+            self.falling_tetrimino.as_mut().unwrap().pos.x -= 1;
+
+            if !check_left_collision(self.falling_tetrimino.unwrap(), self.board) {
+                self.set_current_tetrimino_pos()
+            } else {
+                self.falling_tetrimino.as_mut().unwrap().pos.x += 1;
                 self.set_current_tetrimino_pos();
             }
         }
@@ -64,16 +77,14 @@ impl Engine {
 
     pub fn right(&mut self) {
         if self.falling_tetrimino.is_some() {
-            if self
-                .falling_tetrimino
-                .as_ref()
-                .unwrap()
-                .get_squares()
-                .iter()
-                .all(|square| square.x <= WIDTH - 2)
-            {
-                self.clear_current_tetrimino_pos();
-                self.falling_tetrimino.as_mut().unwrap().pos.x += 1;
+            self.clear_current_tetrimino_pos();
+
+            self.falling_tetrimino.as_mut().unwrap().pos.x += 1;
+
+            if !check_right_collision(self.falling_tetrimino.unwrap(), self.board) {
+                self.set_current_tetrimino_pos()
+            } else {
+                self.falling_tetrimino.as_mut().unwrap().pos.x -= 1;
                 self.set_current_tetrimino_pos();
             }
         }
