@@ -69,7 +69,7 @@ impl Shape {
     }
 
     // Rotations from https://tetris.fandom.com/wiki/SRS?file=SRS-pieces.png
-    pub fn local(&self, rotation: usize) -> [Vec2; 4] {
+    pub fn get_local_coords(&self, rotation: usize) -> [Vec2; 4] {
         let angle = rotation % 4;
         match self {
             Shape::Q => {

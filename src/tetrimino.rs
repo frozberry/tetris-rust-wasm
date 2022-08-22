@@ -35,7 +35,7 @@ impl Tetrimino {
     }
 
     pub fn get_squares(&self) -> [Vec2; 4] {
-        let local = self.shape.local(self.rotation);
+        let local = self.shape.get_local_coords(self.rotation);
         let mut world = [Vec2::new(0, 0); 4];
         for i in 0..4 {
             let x = local[i].x + self.pos.x as i32;
