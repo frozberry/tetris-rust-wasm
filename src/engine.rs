@@ -66,26 +66,6 @@ impl Engine {
 
     pub fn down(&mut self) {
         if self.falling_tetrimino.is_some() {
-            self.clear_current_tetrimino_pos();
-            if self.falling_tetrimino.as_ref().unwrap().pos.y <= HEIGHT - 2 {
-                self.falling_tetrimino.as_mut().unwrap().pos.y += 1;
-
-                // Copied collision detecion from tick
-                if self.check_bottom_row() || self.check_collision() {
-                    self.resolve_collision();
-                    return;
-                }
-            }
-            self.set_current_tetrimino_pos();
-        }
-    }
-
-    pub fn tick(&mut self) {
-        if self.paused {
-            return;
-        }
-
-        if self.frames % 40 == 0 {
             // If there is an falling_tetrimino, update its position
             if self.falling_tetrimino.is_some() {
                 // Clear the board at the tetriminos current position
@@ -101,9 +81,22 @@ impl Engine {
                 }
             }
         }
+    }
+
+    pub fn tick(&mut self) {
+        if self.paused {
+            return;
+        }
+
+        if self.frames % 40 == 0 {
+            if self.falling_tetrimino.is_some() {
+                self.down()
+            }
+        }
 
         self.frames += 1;
     }
+
     fn clear_current_tetrimino_pos(&mut self) {
         self.falling_tetrimino
             .as_ref()
