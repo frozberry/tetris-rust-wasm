@@ -49,7 +49,7 @@ impl Engine {
         // engine.board[13][2] = Some(Color::Yellow);
         // engine.board[13][3] = Some(Color::Yellow);
 
-        engine.set_current_tetrimino_pos();
+        engine.set_ghost();
         engine
     }
 
@@ -71,7 +71,7 @@ impl Engine {
         self.falling_tetrimino.pos.x -= 1;
 
         if !check_collision(self.falling_tetrimino, self.board) {
-            self.set_current_tetrimino_pos()
+            self.set_ghost();
         } else {
             self.falling_tetrimino.pos.x += 1;
             self.set_current_tetrimino_pos();
@@ -84,10 +84,10 @@ impl Engine {
         self.falling_tetrimino.pos.x += 1;
 
         if !check_collision(self.falling_tetrimino, self.board) {
-            self.set_current_tetrimino_pos()
+            self.set_ghost();
         } else {
             self.falling_tetrimino.pos.x -= 1;
-            self.set_current_tetrimino_pos();
+            self.set_current_tetrimino_pos()
         }
     }
 
@@ -123,7 +123,7 @@ impl Engine {
         self.falling_tetrimino.rotation += 1;
 
         if !check_collision(self.falling_tetrimino, self.board) {
-            self.set_current_tetrimino_pos()
+            self.set_ghost();
         } else {
             self.falling_tetrimino.rotation -= 1;
             self.set_current_tetrimino_pos()
@@ -177,6 +177,24 @@ impl Engine {
             return;
         }
         self.falling_tetrimino = tetrimino;
+
+        self.set_ghost();
+    }
+
+    fn set_ghost(&mut self) {
+        let mut ghost = self.falling_tetrimino.clone();
+        self.clear_current_tetrimino_pos();
+
+        loop {
+            ghost.pos.y += 1;
+            if check_collision(ghost, self.board) {
+                ghost.pos.y -= 1;
+                ghost.get_squares().iter().for_each(|square| {
+                    self.board[square.y as usize][square.x as usize] = Color::Ghost
+                });
+                break;
+            }
+        }
 
         self.set_current_tetrimino_pos();
     }

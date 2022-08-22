@@ -12,6 +12,7 @@ const GREEN = "#00FF00"
 const PURPLE = "#800080"
 const ORANGE = "#FF7F00"
 const BLUE = "#0000FF"
+const GHOST = "#00000F"
 
 // Construct the universe, and get its width and height.
 const engine = Engine.new()
@@ -90,6 +91,8 @@ const colorString = (color) => {
       return BLUE
     case Color.Orange:
       return ORANGE
+    case Color.Ghost:
+      return GHOST
 
     default:
       return WHITE
