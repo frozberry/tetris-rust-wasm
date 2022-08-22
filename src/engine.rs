@@ -23,7 +23,7 @@ pub struct Engine {
 #[wasm_bindgen]
 impl Engine {
     pub fn new() -> Engine {
-        let t = Tetrimino::new(Shape::I, 0, 3);
+        let t = Tetrimino::new(Shape::L, 0, 3);
         let board = [[None; WIDTH]; HEIGHT];
 
         Engine {
