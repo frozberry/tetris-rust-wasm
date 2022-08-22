@@ -5,8 +5,8 @@ use crate::{
     tetrimino::Tetrimino,
 };
 
-const WIDTH: usize = 6;
-const HEIGHT: usize = 20;
+pub const WIDTH: usize = 6;
+pub const HEIGHT: usize = 20;
 
 #[wasm_bindgen]
 pub struct Engine {
@@ -137,8 +137,9 @@ impl Engine {
         }
 
         if self.frames % 40 == 0 {
+            // If there is an falling_tetrimino, update its position
             if self.falling_tetrimino.is_some() {
-                // If there is an falling_tetrimino, update its position
+                // Clear the board at the tetriminos current position
                 self.falling_tetrimino
                     .as_ref()
                     .unwrap()
@@ -148,18 +149,11 @@ impl Engine {
                         self.board[square.y][square.x] = None;
                     });
 
+                // Drop tetrimino position
                 self.falling_tetrimino.as_mut().unwrap().pos.y += 1;
 
                 if !self.check_collision() {
-                    let color = self.get_color();
-                    self.falling_tetrimino
-                        .as_ref()
-                        .unwrap()
-                        .get_squares()
-                        .iter()
-                        .for_each(|square| {
-                            self.board[square.y][square.x] = color;
-                        });
+                    self.update_board();
                 } else {
                     self.resolve_collision()
                 }
@@ -167,6 +161,18 @@ impl Engine {
         }
 
         self.frames += 1;
+    }
+
+    fn update_board(&mut self) {
+        let color = self.get_color();
+        self.falling_tetrimino
+            .as_ref()
+            .unwrap()
+            .get_squares()
+            .iter()
+            .for_each(|square| {
+                self.board[square.y][square.x] = color;
+            });
     }
 
     fn check_collision(&self) -> bool {
@@ -192,20 +198,11 @@ impl Engine {
     }
 
     fn resolve_collision(&mut self) {
-        let color = self.get_color();
+        // Move tetrimino back to free space
         self.falling_tetrimino.as_mut().unwrap().pos.y -= 1;
-        self.falling_tetrimino
-            .as_ref()
-            .unwrap()
-            .get_squares()
-            .iter()
-            .for_each(|square| {
-                self.board[square.y][square.x] = color;
-            });
-
+        self.update_board();
         self.clear_full_rows();
-        let t = Tetrimino::spawn();
-        self.falling_tetrimino = Some(t);
+        self.falling_tetrimino = Some(Tetrimino::spawn());
     }
 
     fn clear_full_rows(&mut self) {

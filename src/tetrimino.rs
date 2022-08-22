@@ -1,6 +1,10 @@
 use wasm_bindgen::prelude::wasm_bindgen;
 
-use crate::{shape::Shape, vec2::Vec2};
+use crate::{
+    engine::{Engine, HEIGHT, WIDTH},
+    shape::{Color, Shape},
+    vec2::Vec2,
+};
 
 #[derive(Clone, Copy)]
 #[wasm_bindgen]
