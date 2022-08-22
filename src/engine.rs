@@ -12,7 +12,7 @@ pub const HEIGHT: usize = 20;
 #[wasm_bindgen]
 pub struct Engine {
     board: [[Option<Color>; WIDTH]; HEIGHT],
-    falling_tetrimino: Option<Tetrimino>,
+    falling_tetrimino: Tetrimino,
     paused: bool,
     frames: u32,
 }
@@ -21,9 +21,10 @@ pub struct Engine {
 impl Engine {
     pub fn new() -> Engine {
         let board = [[None; WIDTH]; HEIGHT];
+        let falling_tetrimino = Tetrimino::spawn();
         let mut engine = Engine {
             board,
-            falling_tetrimino: None,
+            falling_tetrimino,
             paused: false,
             frames: 0,
         };
@@ -52,7 +53,7 @@ impl Engine {
         // engine.board[13][2] = Some(Color::Yellow);
         // engine.board[13][3] = Some(Color::Yellow);
 
-        engine.spawn_tetrimino();
+        engine.set_current_tetrimino_pos();
         engine
     }
 
@@ -62,107 +63,91 @@ impl Engine {
         }
 
         if self.frames % 40 == 0 {
-            if self.falling_tetrimino.is_some() {
-                // self.down()
-            }
+            // self.down()
         }
 
         self.frames += 1;
     }
 
     pub fn left(&mut self) {
-        if self.falling_tetrimino.is_some() {
-            self.clear_current_tetrimino_pos();
+        self.clear_current_tetrimino_pos();
 
-            self.falling_tetrimino.as_mut().unwrap().pos.x -= 1;
+        self.falling_tetrimino.pos.x -= 1;
 
-            if !check_collision(self.falling_tetrimino.unwrap(), self.board) {
-                self.set_current_tetrimino_pos()
-            } else {
-                self.falling_tetrimino.as_mut().unwrap().pos.x += 1;
-                self.set_current_tetrimino_pos();
-            }
+        if !check_collision(self.falling_tetrimino, self.board) {
+            self.set_current_tetrimino_pos()
+        } else {
+            self.falling_tetrimino.pos.x += 1;
+            self.set_current_tetrimino_pos();
         }
     }
 
     pub fn right(&mut self) {
-        if self.falling_tetrimino.is_some() {
-            self.clear_current_tetrimino_pos();
+        self.clear_current_tetrimino_pos();
 
-            self.falling_tetrimino.as_mut().unwrap().pos.x += 1;
+        self.falling_tetrimino.pos.x += 1;
 
-            if !check_collision(self.falling_tetrimino.unwrap(), self.board) {
-                self.set_current_tetrimino_pos()
-            } else {
-                self.falling_tetrimino.as_mut().unwrap().pos.x -= 1;
-                self.set_current_tetrimino_pos();
-            }
+        if !check_collision(self.falling_tetrimino, self.board) {
+            self.set_current_tetrimino_pos()
+        } else {
+            self.falling_tetrimino.pos.x -= 1;
+            self.set_current_tetrimino_pos();
         }
     }
 
     pub fn down(&mut self) {
         // If there is an falling_tetrimino, update its position
-        if self.falling_tetrimino.is_some() {
-            // Clear the board at the tetriminos current position
-            self.clear_current_tetrimino_pos();
+        // Clear the board at the tetriminos current position
+        self.clear_current_tetrimino_pos();
 
-            // Increment position
-            self.falling_tetrimino.as_mut().unwrap().pos.y += 1;
+        // Increment position
+        self.falling_tetrimino.pos.y += 1;
 
-            if !check_collision(self.falling_tetrimino.unwrap(), self.board) {
-                self.set_current_tetrimino_pos()
-            } else {
-                self.resolve_collision()
-            }
+        if !check_collision(self.falling_tetrimino, self.board) {
+            self.set_current_tetrimino_pos()
+        } else {
+            self.resolve_collision()
         }
     }
 
     pub fn hard_down(&mut self) {
-        if self.falling_tetrimino.is_some() {
-            loop {
-                self.clear_current_tetrimino_pos();
-                self.falling_tetrimino.as_mut().unwrap().pos.y += 1;
-                if check_collision(self.falling_tetrimino.unwrap(), self.board) {
-                    self.resolve_collision();
-                    return;
-                }
-                self.set_current_tetrimino_pos()
+        loop {
+            self.clear_current_tetrimino_pos();
+            self.falling_tetrimino.pos.y += 1;
+            if check_collision(self.falling_tetrimino, self.board) {
+                self.resolve_collision();
+                return;
             }
+            self.set_current_tetrimino_pos()
         }
     }
 
     pub fn rotate_clockwise(&mut self) {
-        if self.falling_tetrimino.is_some() {
-            self.clear_current_tetrimino_pos();
-            self.falling_tetrimino.as_mut().unwrap().rotation += 1;
+        self.clear_current_tetrimino_pos();
+        self.falling_tetrimino.rotation += 1;
 
-            if !check_collision(self.falling_tetrimino.unwrap(), self.board) {
-                self.set_current_tetrimino_pos()
-            } else {
-                self.falling_tetrimino.as_mut().unwrap().rotation -= 1;
-                self.set_current_tetrimino_pos()
-            }
+        if !check_collision(self.falling_tetrimino, self.board) {
+            self.set_current_tetrimino_pos()
+        } else {
+            self.falling_tetrimino.rotation -= 1;
+            self.set_current_tetrimino_pos()
         }
     }
 
     pub fn rotate_counter_clockwise(&mut self) {
-        if self.falling_tetrimino.is_some() {
-            self.clear_current_tetrimino_pos();
-            self.falling_tetrimino.as_mut().unwrap().rotation -= 1;
+        self.clear_current_tetrimino_pos();
+        self.falling_tetrimino.rotation -= 1;
 
-            if !check_collision(self.falling_tetrimino.unwrap(), self.board) {
-                self.set_current_tetrimino_pos()
-            } else {
-                self.falling_tetrimino.as_mut().unwrap().rotation += 1;
-                self.set_current_tetrimino_pos()
-            }
+        if !check_collision(self.falling_tetrimino, self.board) {
+            self.set_current_tetrimino_pos()
+        } else {
+            self.falling_tetrimino.rotation += 1;
+            self.set_current_tetrimino_pos()
         }
     }
 
     fn clear_current_tetrimino_pos(&mut self) {
         self.falling_tetrimino
-            .as_ref()
-            .unwrap()
             .get_squares()
             .iter()
             .for_each(|square| {
@@ -174,17 +159,15 @@ impl Engine {
     fn set_current_tetrimino_pos(&mut self) {
         let color = self.get_color();
         self.falling_tetrimino
-            .as_ref()
-            .unwrap()
             .get_squares()
             .iter()
-            .for_each(|square| self.board[square.y as usize][square.x as usize] = color);
+            .for_each(|square| self.board[square.y as usize][square.x as usize] = Some(color));
         // collision should already have checked usize are valid
     }
 
     fn resolve_collision(&mut self) {
         // Move tetrimino back to free space
-        self.falling_tetrimino.as_mut().unwrap().pos.y -= 1;
+        self.falling_tetrimino.pos.y -= 1;
         self.set_current_tetrimino_pos();
         self.clear_full_rows();
         self.spawn_tetrimino();
@@ -197,7 +180,7 @@ impl Engine {
             self.reset();
             return;
         }
-        self.falling_tetrimino = Some(tetrimino);
+        self.falling_tetrimino = tetrimino;
 
         self.set_current_tetrimino_pos();
     }
@@ -209,7 +192,6 @@ impl Engine {
             .enumerate()
             .for_each(|(index, row)| {
                 if row.iter().all(|square| square.is_some()) {
-                    self.falling_tetrimino = None;
                     let board_copy = self.board;
 
                     for i in (1..=index).rev() {
@@ -219,11 +201,8 @@ impl Engine {
             })
     }
 
-    fn get_color(&self) -> Option<Color> {
-        match self.falling_tetrimino {
-            Some(tetrimino) => Some(tetrimino.shape.color()),
-            None => None,
-        }
+    fn get_color(&self) -> Color {
+        self.falling_tetrimino.shape.color()
     }
 
     pub fn width(&self) -> usize {
@@ -246,7 +225,7 @@ impl Engine {
     pub fn reset(&mut self) {
         let tetrimino = Tetrimino::spawn();
         let board = [[None; WIDTH]; HEIGHT];
-        self.falling_tetrimino = Some(tetrimino);
+        self.falling_tetrimino = tetrimino;
         self.board = board;
     }
 }
