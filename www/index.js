@@ -58,24 +58,34 @@ const drawCells = () => {
 
   for (let row = 0; row < height; row++) {
     for (let col = 0; col < width; col++) {
-      const idx = getIndex(row, col)
+      let x = col * (CELL_SIZE + 1) + 1
+      let y = row * (CELL_SIZE + 1) + 1
 
-      const color = colorString(cells[idx])
+      const idx = getIndex(row, col)
+      let square = cells[idx]
+
+      let color
+      if (square === Color.Ghost) {
+        color = colorEnumToString(engine.get_color())
+      } else {
+        color = colorEnumToString(square)
+      }
+
       ctx.fillStyle = color
 
-      ctx.fillRect(
-        col * (CELL_SIZE + 1) + 1,
-        row * (CELL_SIZE + 1) + 1,
-        CELL_SIZE,
-        CELL_SIZE
-      )
+      ctx.fillRect(x, y, CELL_SIZE, CELL_SIZE)
+
+      if (square === Color.Ghost) {
+        ctx.fillStyle = GRAY
+        ctx.fillStyle = ctx.fillRect(x + 2, y + 2, CELL_SIZE - 4, CELL_SIZE - 4)
+      }
     }
   }
 
   ctx.stroke()
 }
 
-const colorString = (color) => {
+const colorEnumToString = (color) => {
   switch (color) {
     case Color.Cyan:
       return CYAN

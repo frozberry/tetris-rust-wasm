@@ -67,7 +67,7 @@ impl Engine {
         }
 
         if self.frames % 40 == 0 {
-            // self.down()
+            self.down()
         }
 
         self.frames += 1;
@@ -245,7 +245,7 @@ impl Engine {
             })
     }
 
-    fn get_color(&self) -> Color {
+    pub fn get_color(&self) -> Color {
         self.falling_tetrimino.shape.color()
     }
 
