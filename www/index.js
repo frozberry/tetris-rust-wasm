@@ -101,6 +101,7 @@ function keys(event) {
       break
     case 38:
       console.log("Up key is pressed.")
+      engine.up()
       break
     case 39:
       console.log("Right key is pressed.")
