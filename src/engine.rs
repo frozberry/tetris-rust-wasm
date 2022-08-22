@@ -23,6 +23,7 @@ pub struct Engine {
 #[wasm_bindgen]
 impl Engine {
     pub fn new() -> Engine {
+        // let t = Tetrimino::new(Shape::I, 4, 4);
         let t = Tetrimino::new(Shape::I, 4, 4);
         let board = [[None; WIDTH]; HEIGHT];
 
@@ -44,7 +45,7 @@ impl Engine {
 
         if self.frames % 40 == 0 {
             if self.falling_tetrimino.is_some() {
-                // self.down()
+                self.down()
             }
         }
 

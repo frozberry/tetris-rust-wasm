@@ -5,9 +5,15 @@ use crate::vec2::Vec2Int;
 
 #[wasm_bindgen]
 #[derive(Clone, Copy)]
+
 pub enum Color {
+    Cyan,
+    Yellow,
+    Purple,
+    Green,
     Red,
     Blue,
+    Orange,
 }
 
 #[wasm_bindgen]
@@ -40,9 +46,13 @@ impl Shape {
 
     pub fn color(&self) -> Color {
         match self {
-            Shape::Q => Color::Red,
-            Shape::I => Color::Blue,
-            _ => Color::Blue,
+            Shape::I => Color::Cyan,
+            Shape::Q => Color::Yellow,
+            Shape::Z => Color::Red,
+            Shape::S => Color::Green,
+            Shape::T => Color::Purple,
+            Shape::L => Color::Orange,
+            Shape::J => Color::Blue,
         }
     }
 

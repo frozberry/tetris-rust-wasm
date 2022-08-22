@@ -4,8 +4,13 @@ import { memory } from "../pkg/tetris_wasm_bg"
 const CELL_SIZE = 30
 const GRID_COLOR = "#CCCCCC"
 
-const WHITE = "#FFFFFF"
+const WHITE = "#7f7f7f"
+const CYAN = "#00FFFF"
+const YELLOW = "#FFFF00"
 const RED = "#FF0000"
+const GREEN = "#00FF00"
+const PURPLE = "#800080"
+const ORANGE = "#FF7F00"
 const BLUE = "#0000FF"
 
 // Construct the universe, and get its width and height.
@@ -71,11 +76,20 @@ const drawCells = () => {
 
 const colorString = (color) => {
   switch (color) {
+    case Color.Cyan:
+      return CYAN
+    case Color.Yellow:
+      return YELLOW
+    case Color.Purple:
+      return PURPLE
+    case Color.Green:
+      return GREEN
     case Color.Red:
       return RED
-
     case Color.Blue:
       return BLUE
+    case Color.Orange:
+      return ORANGE
 
     default:
       return WHITE
