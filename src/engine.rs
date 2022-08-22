@@ -227,5 +227,6 @@ impl Engine {
         let board = [[None; WIDTH]; HEIGHT];
         self.falling_tetrimino = tetrimino;
         self.board = board;
+        self.set_current_tetrimino_pos();
     }
 }
