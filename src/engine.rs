@@ -7,7 +7,7 @@ pub const HEIGHT: usize = 20;
 
 #[wasm_bindgen]
 pub struct Engine {
-    board: [[Option<Color>; WIDTH]; HEIGHT],
+    board: [[Color; WIDTH]; HEIGHT],
     falling_tetrimino: Tetrimino,
     paused: bool,
     frames: u32,
@@ -16,7 +16,7 @@ pub struct Engine {
 #[wasm_bindgen]
 impl Engine {
     pub fn new() -> Engine {
-        let board = [[None; WIDTH]; HEIGHT];
+        let board = [[Color::Empty; WIDTH]; HEIGHT];
         let falling_tetrimino = Tetrimino::spawn();
         let mut engine = Engine {
             board,
@@ -147,7 +147,7 @@ impl Engine {
             .get_squares()
             .iter()
             .for_each(|square| {
-                self.board[square.y as usize][square.x as usize] = None;
+                self.board[square.y as usize][square.x as usize] = Color::Empty;
             });
         // collision should already have checked coords are valid
     }
@@ -157,7 +157,7 @@ impl Engine {
         self.falling_tetrimino
             .get_squares()
             .iter()
-            .for_each(|square| self.board[square.y as usize][square.x as usize] = Some(color));
+            .for_each(|square| self.board[square.y as usize][square.x as usize] = color);
         // collision should already have checked usize are valid
     }
 
@@ -187,7 +187,7 @@ impl Engine {
             .iter()
             .enumerate()
             .for_each(|(index, row)| {
-                if row.iter().all(|square| square.is_some()) {
+                if row.iter().all(|square| square.is_solid()) {
                     let board_copy = self.board;
 
                     for i in (1..=index).rev() {
@@ -209,7 +209,7 @@ impl Engine {
         HEIGHT
     }
 
-    pub fn board(&self) -> *const [Option<Color>; WIDTH] {
+    pub fn board(&self) -> *const [Color; WIDTH] {
         self.board.as_ptr()
     }
 
@@ -220,7 +220,7 @@ impl Engine {
 
     pub fn reset(&mut self) {
         let tetrimino = Tetrimino::spawn();
-        let board = [[None; WIDTH]; HEIGHT];
+        let board = [[Color::Empty; WIDTH]; HEIGHT];
         self.falling_tetrimino = tetrimino;
         self.board = board;
         self.set_current_tetrimino_pos();

@@ -11,4 +11,21 @@ pub enum Color {
     Red,
     Blue,
     Orange,
+    Empty,
+}
+
+impl Color {
+    // pub fn is_none(&self) -> bool {
+    //     if let Color::Empty = self {
+    //         return true;
+    //     }
+    //     return false;
+    // }
+
+    pub fn is_solid(&self) -> bool {
+        if let Color::Empty = self {
+            return false;
+        }
+        return true;
+    }
 }
