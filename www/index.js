@@ -66,6 +66,7 @@ const drawCells = () => {
 
       let color
       if (square === Color.Ghost) {
+        // Get the falling tetrimino's color for ghost squares
         color = colorEnumToString(engine.get_color())
       } else {
         color = colorEnumToString(square)
@@ -75,6 +76,7 @@ const drawCells = () => {
 
       ctx.fillRect(x, y, CELL_SIZE, CELL_SIZE)
 
+      // Only show outline for ghost, set inner square to BG color
       if (square === Color.Ghost) {
         ctx.fillStyle = GRAY
         ctx.fillStyle = ctx.fillRect(x + 2, y + 2, CELL_SIZE - 4, CELL_SIZE - 4)
@@ -101,8 +103,6 @@ const colorEnumToString = (color) => {
       return BLUE
     case Color.Orange:
       return ORANGE
-    case Color.Ghost:
-      return GHOST
 
     default:
       return GRAY
