@@ -1,7 +1,7 @@
 use rand::seq::SliceRandom;
 use wasm_bindgen::prelude::wasm_bindgen;
 
-use crate::vec2::Vec2Int;
+use crate::vec2::Vec2;
 
 #[wasm_bindgen]
 #[derive(Clone, Copy)]
@@ -57,47 +57,47 @@ impl Shape {
     }
 
     // Rotations from https://tetris.fandom.com/wiki/SRS?file=SRS-pieces.png
-    pub fn local(&self, rotation: usize) -> [Vec2Int; 4] {
+    pub fn local(&self, rotation: usize) -> [Vec2; 4] {
         let angle = rotation % 4;
         match self {
             Shape::Q => {
-                let a = Vec2Int::new(0, 0);
-                let b = Vec2Int::new(1, 0);
-                let c = Vec2Int::new(0, 1);
-                let d = Vec2Int::new(1, 1);
+                let a = Vec2::new(0, 0);
+                let b = Vec2::new(1, 0);
+                let c = Vec2::new(0, 1);
+                let d = Vec2::new(1, 1);
 
                 [a, b, c, d]
             }
             Shape::Z => match angle {
                 0 => {
-                    let a = Vec2Int::new(0, 0);
-                    let b = Vec2Int::new(1, 0);
-                    let c = Vec2Int::new(0, -1);
-                    let d = Vec2Int::new(-1, -1);
+                    let a = Vec2::new(0, 0);
+                    let b = Vec2::new(1, 0);
+                    let c = Vec2::new(0, -1);
+                    let d = Vec2::new(-1, -1);
 
                     [a, b, c, d]
                 }
                 1 => {
-                    let a = Vec2Int::new(0, 0);
-                    let b = Vec2Int::new(0, 1);
-                    let c = Vec2Int::new(1, 0);
-                    let d = Vec2Int::new(1, -1);
+                    let a = Vec2::new(0, 0);
+                    let b = Vec2::new(0, 1);
+                    let c = Vec2::new(1, 0);
+                    let d = Vec2::new(1, -1);
 
                     [a, b, c, d]
                 }
                 2 => {
-                    let a = Vec2Int::new(0, 0);
-                    let b = Vec2Int::new(-1, 0);
-                    let c = Vec2Int::new(0, 1);
-                    let d = Vec2Int::new(1, 1);
+                    let a = Vec2::new(0, 0);
+                    let b = Vec2::new(-1, 0);
+                    let c = Vec2::new(0, 1);
+                    let d = Vec2::new(1, 1);
 
                     [a, b, c, d]
                 }
                 3 => {
-                    let a = Vec2Int::new(0, 0);
-                    let b = Vec2Int::new(0, -1);
-                    let c = Vec2Int::new(-1, 0);
-                    let d = Vec2Int::new(-1, 1);
+                    let a = Vec2::new(0, 0);
+                    let b = Vec2::new(0, -1);
+                    let c = Vec2::new(-1, 0);
+                    let d = Vec2::new(-1, 1);
 
                     [a, b, c, d]
                 }
@@ -105,34 +105,34 @@ impl Shape {
             },
             Shape::S => match angle {
                 0 => {
-                    let a = Vec2Int::new(0, 0);
-                    let b = Vec2Int::new(-1, 0);
-                    let c = Vec2Int::new(0, -1);
-                    let d = Vec2Int::new(1, -1);
+                    let a = Vec2::new(0, 0);
+                    let b = Vec2::new(-1, 0);
+                    let c = Vec2::new(0, -1);
+                    let d = Vec2::new(1, -1);
 
                     [a, b, c, d]
                 }
                 1 => {
-                    let a = Vec2Int::new(0, 0);
-                    let b = Vec2Int::new(0, -1);
-                    let c = Vec2Int::new(1, 0);
-                    let d = Vec2Int::new(1, 1);
+                    let a = Vec2::new(0, 0);
+                    let b = Vec2::new(0, -1);
+                    let c = Vec2::new(1, 0);
+                    let d = Vec2::new(1, 1);
 
                     [a, b, c, d]
                 }
                 2 => {
-                    let a = Vec2Int::new(0, 0);
-                    let b = Vec2Int::new(1, 0);
-                    let c = Vec2Int::new(0, 1);
-                    let d = Vec2Int::new(-1, 1);
+                    let a = Vec2::new(0, 0);
+                    let b = Vec2::new(1, 0);
+                    let c = Vec2::new(0, 1);
+                    let d = Vec2::new(-1, 1);
 
                     [a, b, c, d]
                 }
                 3 => {
-                    let a = Vec2Int::new(0, 0);
-                    let b = Vec2Int::new(-1, 0);
-                    let c = Vec2Int::new(0, 1);
-                    let d = Vec2Int::new(-1, -1);
+                    let a = Vec2::new(0, 0);
+                    let b = Vec2::new(-1, 0);
+                    let c = Vec2::new(0, 1);
+                    let d = Vec2::new(-1, -1);
 
                     [a, b, c, d]
                 }
@@ -140,34 +140,34 @@ impl Shape {
             },
             Shape::T => match angle {
                 0 => {
-                    let a = Vec2Int::new(0, 0);
-                    let b = Vec2Int::new(1, 0);
-                    let c = Vec2Int::new(-1, 0);
-                    let d = Vec2Int::new(0, -1);
+                    let a = Vec2::new(0, 0);
+                    let b = Vec2::new(1, 0);
+                    let c = Vec2::new(-1, 0);
+                    let d = Vec2::new(0, -1);
 
                     [a, b, c, d]
                 }
                 1 => {
-                    let a = Vec2Int::new(0, 0);
-                    let b = Vec2Int::new(1, 0);
-                    let c = Vec2Int::new(0, 1);
-                    let d = Vec2Int::new(0, -1);
+                    let a = Vec2::new(0, 0);
+                    let b = Vec2::new(1, 0);
+                    let c = Vec2::new(0, 1);
+                    let d = Vec2::new(0, -1);
 
                     [a, b, c, d]
                 }
                 2 => {
-                    let a = Vec2Int::new(0, 0);
-                    let b = Vec2Int::new(1, 0);
-                    let c = Vec2Int::new(-1, 0);
-                    let d = Vec2Int::new(0, 1);
+                    let a = Vec2::new(0, 0);
+                    let b = Vec2::new(1, 0);
+                    let c = Vec2::new(-1, 0);
+                    let d = Vec2::new(0, 1);
 
                     [a, b, c, d]
                 }
                 3 => {
-                    let a = Vec2Int::new(0, 0);
-                    let b = Vec2Int::new(-1, 0);
-                    let c = Vec2Int::new(0, 1);
-                    let d = Vec2Int::new(0, -1);
+                    let a = Vec2::new(0, 0);
+                    let b = Vec2::new(-1, 0);
+                    let c = Vec2::new(0, 1);
+                    let d = Vec2::new(0, -1);
 
                     [a, b, c, d]
                 }
@@ -175,34 +175,34 @@ impl Shape {
             },
             Shape::I => match angle {
                 0 => {
-                    let a = Vec2Int::new(0, 0);
-                    let b = Vec2Int::new(-1, 0);
-                    let c = Vec2Int::new(1, 0);
-                    let d = Vec2Int::new(2, 0);
+                    let a = Vec2::new(0, 0);
+                    let b = Vec2::new(-1, 0);
+                    let c = Vec2::new(1, 0);
+                    let d = Vec2::new(2, 0);
 
                     [a, b, c, d]
                 }
                 1 => {
-                    let a = Vec2Int::new(1, 0);
-                    let b = Vec2Int::new(1, 1);
-                    let c = Vec2Int::new(1, 2);
-                    let d = Vec2Int::new(1, -1);
+                    let a = Vec2::new(1, 0);
+                    let b = Vec2::new(1, 1);
+                    let c = Vec2::new(1, 2);
+                    let d = Vec2::new(1, -1);
 
                     [a, b, c, d]
                 }
                 2 => {
-                    let a = Vec2Int::new(0, 1);
-                    let b = Vec2Int::new(-1, 1);
-                    let c = Vec2Int::new(1, 1);
-                    let d = Vec2Int::new(2, 1);
+                    let a = Vec2::new(0, 1);
+                    let b = Vec2::new(-1, 1);
+                    let c = Vec2::new(1, 1);
+                    let d = Vec2::new(2, 1);
 
                     [a, b, c, d]
                 }
                 3 => {
-                    let a = Vec2Int::new(0, 1);
-                    let b = Vec2Int::new(0, 2);
-                    let c = Vec2Int::new(0, -1);
-                    let d = Vec2Int::new(0, 0);
+                    let a = Vec2::new(0, 1);
+                    let b = Vec2::new(0, 2);
+                    let c = Vec2::new(0, -1);
+                    let d = Vec2::new(0, 0);
 
                     [a, b, c, d]
                 }
@@ -210,34 +210,34 @@ impl Shape {
             },
             Shape::L => match angle {
                 0 => {
-                    let a = Vec2Int::new(0, 0);
-                    let b = Vec2Int::new(1, 0);
-                    let c = Vec2Int::new(-1, 0);
-                    let d = Vec2Int::new(1, -1);
+                    let a = Vec2::new(0, 0);
+                    let b = Vec2::new(1, 0);
+                    let c = Vec2::new(-1, 0);
+                    let d = Vec2::new(1, -1);
 
                     [a, b, c, d]
                 }
                 1 => {
-                    let a = Vec2Int::new(0, 0);
-                    let b = Vec2Int::new(1, 1);
-                    let c = Vec2Int::new(0, -1);
-                    let d = Vec2Int::new(0, 1);
+                    let a = Vec2::new(0, 0);
+                    let b = Vec2::new(1, 1);
+                    let c = Vec2::new(0, -1);
+                    let d = Vec2::new(0, 1);
 
                     [a, b, c, d]
                 }
                 2 => {
-                    let a = Vec2Int::new(0, 0);
-                    let b = Vec2Int::new(1, 0);
-                    let c = Vec2Int::new(-1, 0);
-                    let d = Vec2Int::new(-1, 1);
+                    let a = Vec2::new(0, 0);
+                    let b = Vec2::new(1, 0);
+                    let c = Vec2::new(-1, 0);
+                    let d = Vec2::new(-1, 1);
 
                     [a, b, c, d]
                 }
                 3 => {
-                    let a = Vec2Int::new(0, 0);
-                    let b = Vec2Int::new(0, -1);
-                    let c = Vec2Int::new(0, 1);
-                    let d = Vec2Int::new(-1, -1);
+                    let a = Vec2::new(0, 0);
+                    let b = Vec2::new(0, -1);
+                    let c = Vec2::new(0, 1);
+                    let d = Vec2::new(-1, -1);
 
                     [a, b, c, d]
                 }
@@ -245,34 +245,34 @@ impl Shape {
             },
             Shape::J => match angle {
                 0 => {
-                    let a = Vec2Int::new(0, 0);
-                    let b = Vec2Int::new(1, 0);
-                    let c = Vec2Int::new(-1, 0);
-                    let d = Vec2Int::new(-1, -1);
+                    let a = Vec2::new(0, 0);
+                    let b = Vec2::new(1, 0);
+                    let c = Vec2::new(-1, 0);
+                    let d = Vec2::new(-1, -1);
 
                     [a, b, c, d]
                 }
                 1 => {
-                    let a = Vec2Int::new(0, 0);
-                    let b = Vec2Int::new(1, -1);
-                    let c = Vec2Int::new(0, -1);
-                    let d = Vec2Int::new(0, 1);
+                    let a = Vec2::new(0, 0);
+                    let b = Vec2::new(1, -1);
+                    let c = Vec2::new(0, -1);
+                    let d = Vec2::new(0, 1);
 
                     [a, b, c, d]
                 }
                 2 => {
-                    let a = Vec2Int::new(0, 0);
-                    let b = Vec2Int::new(1, 0);
-                    let c = Vec2Int::new(-1, 0);
-                    let d = Vec2Int::new(1, 1);
+                    let a = Vec2::new(0, 0);
+                    let b = Vec2::new(1, 0);
+                    let c = Vec2::new(-1, 0);
+                    let d = Vec2::new(1, 1);
 
                     [a, b, c, d]
                 }
                 3 => {
-                    let a = Vec2Int::new(0, 0);
-                    let b = Vec2Int::new(0, -1);
-                    let c = Vec2Int::new(0, 1);
-                    let d = Vec2Int::new(-1, 1);
+                    let a = Vec2::new(0, 0);
+                    let b = Vec2::new(0, -1);
+                    let c = Vec2::new(0, 1);
+                    let d = Vec2::new(-1, 1);
 
                     [a, b, c, d]
                 }
