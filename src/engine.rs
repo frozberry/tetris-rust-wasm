@@ -1,7 +1,10 @@
 use wasm_bindgen::prelude::*;
 
 use crate::{
-    collision::{self, check_down_collision, check_left_collision, check_right_collision},
+    collision::{
+        self, check_down_collision, check_left_collision, check_left_wall_collision,
+        check_right_collision,
+    },
     shape::{Color, Shape},
     tetrimino::Tetrimino,
 };
@@ -47,30 +50,18 @@ impl Engine {
 
     pub fn left(&mut self) {
         if self.falling_tetrimino.is_some() {
-            self.clear_current_tetrimino_pos();
-
-            // Left needs different logic since usize can't underflow
-            let new_x = self
-                .falling_tetrimino
-                .as_ref()
-                .unwrap()
-                .pos
-                .x
-                .checked_sub(1);
-
-            // If current x pos is 0
-            if new_x.is_none() {
-                self.set_current_tetrimino_pos();
+            // Early return to prevent underflowing usize
+            if check_left_wall_collision(self.falling_tetrimino.unwrap()) {
                 return;
             }
 
+            self.clear_current_tetrimino_pos();
             self.falling_tetrimino.as_mut().unwrap().pos.x -= 1;
 
             if !check_left_collision(self.falling_tetrimino.unwrap(), self.board) {
                 self.set_current_tetrimino_pos()
             } else {
                 self.falling_tetrimino.as_mut().unwrap().pos.x += 1;
-                self.set_current_tetrimino_pos();
             }
         }
     }
@@ -96,7 +87,6 @@ impl Engine {
             // Clear the board at the tetriminos current position
             self.clear_current_tetrimino_pos();
 
-            // Drop tetrimino position
             self.falling_tetrimino.as_mut().unwrap().pos.y += 1;
 
             if !check_down_collision(self.falling_tetrimino.unwrap(), self.board) {

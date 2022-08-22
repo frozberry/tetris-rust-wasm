@@ -37,6 +37,13 @@ fn check_floor_collision(tetrimino: Tetrimino) -> bool {
         .any(|square| square.y >= HEIGHT)
 }
 
+pub fn check_left_wall_collision(tetrimino: Tetrimino) -> bool {
+    tetrimino
+        .get_squares()
+        .iter()
+        .any(|square| square.x.checked_sub(1).is_none())
+}
+
 fn check_right_wall_collision(tetrimino: Tetrimino) -> bool {
     tetrimino
         .get_squares()
