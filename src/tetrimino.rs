@@ -2,7 +2,7 @@ use wasm_bindgen::prelude::wasm_bindgen;
 
 use crate::{
     engine::{Engine, HEIGHT, WIDTH},
-    shape::{Color, Shape},
+    shape::Shape,
     vec2::Vec2,
 };
 

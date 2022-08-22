@@ -1,6 +1,6 @@
 use crate::{
+    color::Color,
     engine::{HEIGHT, WIDTH},
-    shape::Color,
     tetrimino::Tetrimino,
 };
 

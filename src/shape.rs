@@ -1,20 +1,7 @@
 use rand::seq::SliceRandom;
 use wasm_bindgen::prelude::wasm_bindgen;
 
-use crate::vec2::Vec2;
-
-#[wasm_bindgen]
-#[derive(Clone, Copy)]
-
-pub enum Color {
-    Cyan,
-    Yellow,
-    Purple,
-    Green,
-    Red,
-    Blue,
-    Orange,
-}
+use crate::{color::Color, vec2::Vec2};
 
 #[wasm_bindgen]
 #[derive(Clone, Copy)]

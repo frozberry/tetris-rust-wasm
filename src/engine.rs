@@ -1,10 +1,6 @@
 use wasm_bindgen::prelude::*;
 
-use crate::{
-    collision::check_collision,
-    shape::{Color, Shape},
-    tetrimino::Tetrimino,
-};
+use crate::{collision::check_collision, color::Color, tetrimino::Tetrimino};
 
 pub const WIDTH: usize = 10;
 pub const HEIGHT: usize = 20;
