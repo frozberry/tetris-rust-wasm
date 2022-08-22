@@ -1,6 +1,6 @@
 use wasm_bindgen::prelude::*;
 
-use crate::tetrimino::{Shape, Tetrimino};
+use crate::{shape::Shape, tetrimino::Tetrimino};
 
 const WIDTH: usize = 4;
 const HEIGHT: usize = 20;

@@ -1,18 +1,5 @@
-use crate::vec2::Vec2;
-use rand::seq::SliceRandom;
+use crate::{vec2::Vec2, shape::Shape};
 
-#[derive(Clone, Copy)]
-pub enum Shape {
-    Q,
-    I,
-}
-
-impl Shape {
-    pub fn rand() -> Self {
-        let mut rng = rand::thread_rng();
-        *[Shape::Q, Shape::I].choose(&mut rng).unwrap()
-    }
-}
 pub struct Tetrimino {
     pub pos: Vec2,
     pub shape: Shape,

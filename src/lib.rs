@@ -1,5 +1,6 @@
 mod engine;
 mod input;
+mod shape;
 mod tetrimino;
 mod utils;
 mod vec2;
