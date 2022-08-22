@@ -33,30 +33,6 @@ impl Engine {
             ghost_squares,
         };
 
-        // engine.board[19][0] = Some(Color::Yellow);
-        // engine.board[19][1] = Some(Color::Yellow);
-        // engine.board[19][4] = Some(Color::Yellow);
-        // engine.board[19][5] = Some(Color::Yellow);
-        //
-        // engine.board[18][0] = Some(Color::Yellow);
-        // engine.board[18][1] = Some(Color::Yellow);
-        // engine.board[18][4] = Some(Color::Yellow);
-        // engine.board[18][5] = Some(Color::Yellow);
-
-        // engine.board[17][2] = Some(Color::Yellow);
-        // engine.board[17][3] = Some(Color::Yellow);
-        // engine.board[17][4] = Some(Color::Yellow);
-        // engine.board[17][5] = Some(Color::Yellow);
-
-        // engine.board[16][2] = Some(Color::Yellow);
-        // engine.board[16][3] = Some(Color::Yellow);
-        // engine.board[15][2] = Some(Color::Yellow);
-        // engine.board[15][3] = Some(Color::Yellow);
-        // engine.board[14][2] = Some(Color::Yellow);
-        // engine.board[14][3] = Some(Color::Yellow);
-        // engine.board[13][2] = Some(Color::Yellow);
-        // engine.board[13][3] = Some(Color::Yellow);
-
         engine.set_ghost();
         engine
     }
