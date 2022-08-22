@@ -1,5 +1,9 @@
-use crate::{vec2::Vec2, shape::Shape};
+use wasm_bindgen::prelude::wasm_bindgen;
 
+use crate::{shape::Shape, vec2::Vec2};
+
+#[derive(Clone, Copy)]
+#[wasm_bindgen]
 pub struct Tetrimino {
     pub pos: Vec2,
     pub shape: Shape,

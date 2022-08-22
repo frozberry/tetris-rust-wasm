@@ -1,13 +1,16 @@
 use wasm_bindgen::prelude::*;
 
-use crate::{shape::Shape, tetrimino::Tetrimino};
+use crate::{
+    shape::{Color, Shape},
+    tetrimino::Tetrimino,
+};
 
-const WIDTH: usize = 4;
+const WIDTH: usize = 6;
 const HEIGHT: usize = 20;
 
 #[wasm_bindgen]
 pub struct Engine {
-    board: [[bool; WIDTH]; HEIGHT],
+    board: [[Option<Color>; WIDTH]; HEIGHT],
     falling_tetrimino: Option<Tetrimino>,
     paused: bool,
     frames: u32,
@@ -16,8 +19,8 @@ pub struct Engine {
 #[wasm_bindgen]
 impl Engine {
     pub fn new() -> Engine {
-        let t = Tetrimino::new(Shape::Q, 1, 3);
-        let board = [[false; WIDTH]; HEIGHT];
+        let t = Tetrimino::new(Shape::I, 0, 3);
+        let board = [[None; WIDTH]; HEIGHT];
 
         Engine {
             board,
@@ -25,6 +28,12 @@ impl Engine {
             paused: false,
             frames: 0,
         }
+    }
+
+    pub fn tetrimino(&self) -> Option<Color> {
+        // Some(self.falling_tetrimino.unwrap().shape.color())
+        // Some(Color::Red)
+        None
     }
 
     pub fn width(&self) -> usize {
@@ -35,7 +44,7 @@ impl Engine {
         HEIGHT
     }
 
-    pub fn board(&self) -> *const [bool; WIDTH] {
+    pub fn board(&self) -> *const [Option<Color>; WIDTH] {
         self.board.as_ptr()
     }
 
@@ -96,19 +105,18 @@ impl Engine {
             .get_squares()
             .iter()
             .for_each(|square| {
-                self.board[square.y][square.x] = false;
+                self.board[square.y][square.x] = None;
             });
     }
 
     fn set_current_square(&mut self) {
+        let color = self.get_color();
         self.falling_tetrimino
             .as_ref()
             .unwrap()
             .get_squares()
             .iter()
-            .for_each(|square| {
-                self.board[square.y][square.x] = true;
-            });
+            .for_each(|square| self.board[square.y][square.x] = color);
     }
 
     pub fn toggle_pause(&mut self) -> bool {
@@ -118,7 +126,7 @@ impl Engine {
 
     pub fn reset(&mut self) {
         let t = Tetrimino::new(Shape::Q, 1, 3);
-        let board = [[false; WIDTH]; HEIGHT];
+        let board = [[None; WIDTH]; HEIGHT];
         self.falling_tetrimino = Some(t);
         self.board = board;
     }
@@ -137,19 +145,20 @@ impl Engine {
                     .get_squares()
                     .iter()
                     .for_each(|square| {
-                        self.board[square.y][square.x] = false;
+                        self.board[square.y][square.x] = None;
                     });
 
                 self.falling_tetrimino.as_mut().unwrap().pos.y += 1;
 
                 if !self.check_collision() {
+                    let color = self.get_color();
                     self.falling_tetrimino
                         .as_ref()
                         .unwrap()
                         .get_squares()
                         .iter()
                         .for_each(|square| {
-                            self.board[square.y][square.x] = true;
+                            self.board[square.y][square.x] = color;
                         });
                 } else {
                     self.resolve_collision()
@@ -179,10 +188,11 @@ impl Engine {
             .unwrap()
             .get_squares()
             .iter()
-            .any(|square| self.board[square.y][square.x])
+            .any(|square| self.board[square.y][square.x].is_some())
     }
 
     fn resolve_collision(&mut self) {
+        let color = self.get_color();
         self.falling_tetrimino.as_mut().unwrap().pos.y -= 1;
         self.falling_tetrimino
             .as_ref()
@@ -190,7 +200,7 @@ impl Engine {
             .get_squares()
             .iter()
             .for_each(|square| {
-                self.board[square.y][square.x] = true;
+                self.board[square.y][square.x] = color;
             });
 
         self.clear_full_rows();
@@ -204,7 +214,7 @@ impl Engine {
             .iter()
             .enumerate()
             .for_each(|(index, row)| {
-                if row.iter().all(|square| *square) {
+                if row.iter().all(|square| square.is_some()) {
                     self.falling_tetrimino = None;
                     let board_copy = self.board;
 
@@ -213,5 +223,12 @@ impl Engine {
                     }
                 }
             })
+    }
+
+    fn get_color(&self) -> Option<Color> {
+        match self.falling_tetrimino {
+            Some(tetrimino) => Some(tetrimino.shape.color()),
+            None => None,
+        }
     }
 }
