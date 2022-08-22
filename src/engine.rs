@@ -9,7 +9,7 @@ use crate::{
     tetrimino::Tetrimino,
 };
 
-pub const WIDTH: usize = 10;
+pub const WIDTH: usize = 8;
 pub const HEIGHT: usize = 20;
 
 #[wasm_bindgen]
@@ -26,12 +26,15 @@ impl Engine {
         let t = Tetrimino::new(Shape::I, 0, 3);
         let board = [[None; WIDTH]; HEIGHT];
 
-        Engine {
+        let mut engine = Engine {
             board,
             falling_tetrimino: Some(t),
             paused: false,
             frames: 0,
-        }
+        };
+
+        engine.set_current_tetrimino_pos();
+        engine
     }
 
     pub fn tick(&mut self) {
@@ -131,6 +134,7 @@ impl Engine {
         self.set_current_tetrimino_pos();
         self.clear_full_rows();
         self.falling_tetrimino = Some(Tetrimino::spawn());
+        self.set_current_tetrimino_pos();
     }
 
     fn clear_full_rows(&mut self) {

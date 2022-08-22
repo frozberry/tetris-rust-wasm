@@ -25,7 +25,8 @@ impl Tetrimino {
     pub fn spawn() -> Self {
         Tetrimino {
             pos: Vec2::new(0, 10),
-            shape: Shape::rand(),
+            // shape: Shape::rand(),
+            shape: Shape::I,
             rotation: 0,
         }
     }
