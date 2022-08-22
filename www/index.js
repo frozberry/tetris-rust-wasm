@@ -149,8 +149,7 @@ function keys(event) {
   }
 }
 
-const container = document.getElementById("canvas-container")
-container.addEventListener("keydown", keys, false)
+window.addEventListener("keydown", keys, false)
 
 // Prevent arrow keys scrolling
 window.addEventListener(
