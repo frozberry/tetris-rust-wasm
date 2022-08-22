@@ -37,11 +37,51 @@ impl Tetrimino {
 
                 [a, b, c, d]
             }
+            Shape::Z => {
+                let a = Vec2::new(self.pos.x + 1, self.pos.y + 1);
+                let b = Vec2::new(self.pos.x + 2, self.pos.y + 1);
+                let c = Vec2::new(self.pos.x, self.pos.y);
+                let d = Vec2::new(self.pos.x + 1, self.pos.y);
+
+                [a, b, c, d]
+            }
+            Shape::S => {
+                let a = Vec2::new(self.pos.x, self.pos.y);
+                let b = Vec2::new(self.pos.x + 1, self.pos.y);
+                let c = Vec2::new(self.pos.x + 1, self.pos.y - 1);
+                let d = Vec2::new(self.pos.x + 2, self.pos.y - 1);
+
+                [a, b, c, d]
+            }
+            Shape::T => {
+                let a = Vec2::new(self.pos.x + 1, self.pos.y + 1);
+                let b = Vec2::new(self.pos.x, self.pos.y);
+                let c = Vec2::new(self.pos.x + 1, self.pos.y);
+                let d = Vec2::new(self.pos.x + 2, self.pos.y);
+
+                [a, b, c, d]
+            }
             Shape::I => {
                 let a = Vec2::new(self.pos.x, self.pos.y);
                 let b = Vec2::new(self.pos.x + 1, self.pos.y);
                 let c = Vec2::new(self.pos.x + 2, self.pos.y);
                 let d = Vec2::new(self.pos.x + 3, self.pos.y);
+
+                [a, b, c, d]
+            }
+            Shape::L => {
+                let a = Vec2::new(self.pos.x, self.pos.y);
+                let b = Vec2::new(self.pos.x, self.pos.y - 1);
+                let c = Vec2::new(self.pos.x, self.pos.y - 2);
+                let d = Vec2::new(self.pos.x + 1, self.pos.y);
+
+                [a, b, c, d]
+            }
+            Shape::J => {
+                let a = Vec2::new(self.pos.x, self.pos.y);
+                let b = Vec2::new(self.pos.x + 1, self.pos.y);
+                let c = Vec2::new(self.pos.x + 1, self.pos.y - 1);
+                let d = Vec2::new(self.pos.x + 1, self.pos.y - 2);
 
                 [a, b, c, d]
             }

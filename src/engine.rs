@@ -9,7 +9,7 @@ use crate::{
     tetrimino::Tetrimino,
 };
 
-pub const WIDTH: usize = 6;
+pub const WIDTH: usize = 10;
 pub const HEIGHT: usize = 20;
 
 #[wasm_bindgen]
